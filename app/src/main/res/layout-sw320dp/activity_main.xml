@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="gbstracking.Userlogin.MainActivity"
+    android:background="@drawable/bc2">
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/bgrect">
+
+
+    </FrameLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+    <TextView
+        android:id="@+id/terms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/already"
+        android:textColor="#f9a3a3"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        />
+        <TextView
+            android:id="@+id/terms2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/signin"
+            android:textColor="#09ff42"
+            android:layout_toRightOf="@id/terms"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            />
+    <TextView
+        android:id="@+id/create"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/createacc"
+        android:typeface="serif"
+        android:textColor="#DCD0C0"
+       android:layout_marginTop="@dimen/_50sdp"
+        android:textSize="23dp"
+       android:layout_centerHorizontal="true" />
+
+
+
+
+
+    <Button
+        android:id="@+id/btnregister"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/regist"
+        android:textColor="#B1938B"
+        android:textSize="19dp"
+        android:layout_above="@+id/terms"
+        android:typeface="serif"
+        android:padding="16dp"
+        android:gravity="center"
+        android:background="@drawable/rect"
+        android:layout_marginBottom="26dp"/>
+
+
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+        android:layout_marginTop="-35dp">
+
+        <EditText
+            android:id="@+id/name"
+            android:layout_height="@dimen/_50sdp"
+            android:layout_width="match_parent"
+            android:background="@drawable/rect1"
+            android:layout_marginTop="@dimen/_150sdp"
+            android:maxLength="25"
+            android:hint="@string/name"
+            android:textColor="#fff"
+            android:textColorHint="#DCD0C0"
+            android:paddingLeft="20dp"
+            android:drawableLeft="@drawable/user"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:drawablePadding="16dp">
+        </EditText>
+
+        <EditText
+            android:textColor="#fff"
+            android:id="@+id/email"
+            android:layout_height="@dimen/_50sdp"
+            android:maxLength="35"
+            android:inputType="textEmailAddress"
+            android:layout_width="match_parent"
+            android:background="@drawable/rect1"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:paddingRight="@dimen/_10sdp"
+            android:hint="@string/email"
+            android:textColorHint="#DCD0C0"
+            android:drawableLeft="@drawable/email"
+            android:paddingLeft="20dp"
+            android:drawablePadding="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+
+            >
+        </EditText>
+
+        <EditText
+            android:textColor="#fff"
+            android:id="@+id/pass"
+            android:layout_height="@dimen/_50sdp"
+            android:layout_width="match_parent"
+            android:background="@drawable/rect1"
+            android:layout_marginTop="20dp"
+            android:hint="@string/pas"
+            android:textColorHint="#DCD0C0"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:paddingRight="@dimen/_10sdp"
+            android:singleLine="true"
+            android:maxLength="25"
+            android:drawableLeft="@drawable/pass"
+            android:paddingLeft="20dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:drawablePadding="16dp">
+        </EditText>
+
+    </LinearLayout>
+        <ProgressBar
+            android:id="@+id/progressBarr"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:foreground="#06e6f2"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="Direction">الاتجاهات </string>
+    <string name="Startdirection">أبدأ التحرك </string>
+    <string name="app_name">GBs Tracking</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="mobile">Mobile</string>
+    <string name="title_activity_recycle_view">RecycleView</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_nvigation">Nvigation</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="hintEmail">البريد الالكتروني </string>
+
+
+    <string name="twitter_consumer_key" translatable="false">ueJEB6bmw7bxNlgIbqWwIV6mB</string>
+    <string name="twitter_consumer_secret" translatable="false">osQrQuGBD8ya7Fe6MoNWHOtsXJo4UyFP8siOKhX8RTIGBWXkZa
+</string>
+
+    <string name="textfreind">أدخل البريد الالكتروني </string>
+    <string name="add">اضافة صديق </string>
+    <string name="sendMessage">ارسال</string>
+    <string name="title_shop">Shop</string>
+    <string name="title_gifts">Gifts</string>
+    <string name="title_cart">Cart</string>
+    <string name="title_profile">Profile</string>
+
+    <string name="Drawww">الاتجاهات</string>
+    <string name="Animat">الرسوم المتحركة</string>
+    <string name="Call">اتصال </string>
+    <string name="Phone">التحقق من رقم هاتفك</string>
+    <string name="call">التحقق</string>
+    <string name="FACEBOOK_APP_ID">521429271587864</string>
+    <string name="ACCOUNT_KIT_CLIENT_TOKEN">5dcc68ade9d5a93344d2b27f2f522f07
+</string>
+    <string name="warrning">يرجى قراءة التعليمات لدينا : </string>
+    <string name="warrning2">هذة الرسالة  ستظهر لمرة واحدة : </string>
+    <string name="warrning3">لضمان سلامتك يجب عليك اتباع بعض الخطوات . </string>
+    <string name="warrning4"> أولاً: أدخل رقم التعريف الخاص بك وقم بتأكيده لتنشيط رسالة الطوارئ الخاصة بك </string>
+    <string name="warrning5"> ثانيًا: أدخل جهات الاتصال  التي سترسل إليها رسالة الطوارئ في حالة الخطر</string>
+    <string name="warrning6">ملاحظة: لا يمكنك تعديل الأشخاص الذين يتم اختيارهم ، تأكد أولاً قبل اختيارهم</string>
+    <string name="warrning7"> الرسالة ستكون مثل هذة : </string>
+    <string name="warrning8">أنا في خطر الرجاء مساعدة ، وسوف تحتوي على العنوان ، المدينة ، التاريخ ، الوقت</string>
+    <string name="warrning9">قبل إرسالها يجب أن تتأكد من أنك بدأت بتشغيل الجي بي اس في هذا الوقت للحصول على موقعك </string>
+    <string name="secretnumber">ادخل رقم هاتفك</string>
+    <string name="save">احفظ </string>
+    <string name="Watningmessage">رسالة الطوارئ </string>
+    <string name="choose"> اختار اصدقائك </string>
+    <string name="Finish">انهاء</string>
+    <string name="agree">موافق </string>
+    <string name="Letschoose">اختار</string>
+    <string name="welceommessage">مرحب بكم </string>
+    <string name="welcome1">رسائل الطوارئ هي طريقة لطلب المساعدة في حالات الخطر. </string>
+    <string name="welcome2"> قدمناها في تطبيقنا خدمة مجانية التي  يمكن من خلالها أن ترسل أنت و أصدقائك إلى بعضكما  لطلب المساعدة في أي مشكلة تواجهها.</string>
+    <string name="btnimergency">إرسال رسالة الطوارئ </string>
+    <string name="skiip">تخطى</string>
+    <string name="pin">ادخل الكود الشخصي </string>
+    <string name="mesge">أنا في خطر الرجاء مساعدة</string>
+    <string name="isslect">تم اختيار </string>
+    <string name="appwidget_text">رسالة الطوارئ</string>
+    <string name="already">هل لديك حساب ؟  </string>
+    <string name="signin"> تسجيل الدخول  </string>
+    <string name="createacc">انشاء حساب جديد </string>
+    <string name="regist">تسجيل  </string>
+    <string name="name">اسم المستخدم </string>
+    <string name="email">البريد الالكتروني </string>
+    <string name="pas">كلمة السر </string>
+    <string name="email2">البريد الالكتروني : </string>
+    <string name="time">الزمن : </string>
+    <string name="date">التاريخ : </string>
+    <string name="location">الموقع:</string>
+    <string name="sendMessage2">ارسل رسالة </string>
+    <string name="reset">إعادة تعيين </string>
+    <string name="availble">متاح الان </string>
+    <string name="wlcome">مرحب بكم </string>
+    <string name="Login">تسجيل الدخول</string>
+    <string name="remember">تذكرنى </string>
+    <string name="forget">هل نسيت كلمة المرور ؟</string>
+    <string name="donthave">ليس لديك  حساب ؟ </string>
+    <string name="signup">تسجيل   </string>
+    <string name="home">الصفحة الرئيسية </string>
+    <string name="freid">الأصدقاء</string>
+    <string name="denger">رسالة الطوارئ </string>
+    <string name="logout">تسجيل خروج </string>
+    <string name="freinds">الأصدقاء</string>
+    <string name="reqests">طلبات الصداقة</string>
+    <string name="errornumber">الرقم السري يجب أن يكون 4 أرقام</string>
+    <string name="cancel">الغاء </string>
+    <string name="details">المزيد من التفاصيل </string>
+    <string name="search">  ابحث </string>
+    <string name="find">ابحث عن اصدقائك</string>
+    <string name="namee">أدخل أسمك</string>
+    <string name="invalidemail">البريد الالكتروني خطأ </string>
+    <string name="enterpas">ادخل الرقم السري </string>
+    <string name="verfiymail">تم إرسال رسالة التحقق إلى</string>
+    <string name="alreadyuser">هذا البريد الإلكتروني موجود بالفعل </string>
+    <string name="fullinform">أدخل بياناتك اولا </string>
+    <string name="confirm">قبول </string>
+    <string name="delete">حذف  </string>
+    <string name="reseet">تم إرسال رمز إعادة تعيين كلمة المرور إلى البريد الإلكتروني</string>
+    <string name="invalidemaail">بريد إلكتروني غير صالح ، حاول لاحقًا</string>
+    <string name="invalidysandpas">خطأ في اسم المستخدم أو كلمة مرور</string>
+    <string name="locationshre"> يطلب منك x مشاركة موقعك </string>
+    <string name="contact">جهات الاتصال</string>
+    <string name="invitefriends">ادعوا اصدقائك</string>
+    <string name="share">التوصل الاجتماعي </string>
+    <string name="invite">ادعوا أصدقائك </string>
+    <string name="alert">تم إرسال رسالة الطوارئ بنجاح</string>
+    <string name="transport">أقرب الاماكن </string>
+    <string name="bus">محطة الأتوبيس </string>
+    <string name="train">مترو الأنفاق</string>
+    <string name="taxi">محطة سيارات الأجره</string>
+    <string name="Nearestplaces">أقرب الأماكن </string>
+    <string name="myloc">موقعي </string>
+    <string name="friendloc">موقع أصدقائي </string>
+    <string name="spinner_title">ألاصدقاء</string>
+    <string name="doctor">دكتور </string>
+    <string name="hospital">مستشفي </string>
+    <string name="pharmcy"> صيدلية </string>
+    <string name="poilce">قسم الامن </string>
+    <string name="cofe">كافيه </string>
+    <string name="Search">أبحث</string>
+    <string name="nofriends">لا يوحد اصدقاء لديك </string>
+    <string name="friendsloc">موقع الاصدقاء</string>
+    <string name="reduis">نصف القطر </string>
+</resources>

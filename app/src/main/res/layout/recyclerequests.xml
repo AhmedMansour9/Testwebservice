@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffff"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_80sdp"
+        android:id="@+id/friendCardView2"
+        app:cardBackgroundColor="@android:color/white"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        app:cardCornerRadius="5dp"
+        android:layout_below="@+id/FrienCARDVIEW"
+        app:cardElevation="7dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/_10sdp"
+            >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ahmed Sayed Mansour"
+            android:textColor="#2f2f30"
+            android:id="@+id/textEmailRequest"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_centerHorizontal="true"
+              android:textStyle="italic"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_below="@+id/textEmailRequest"
+            android:text="CONFIRM"
+            android:background="@drawable/btnconfirm"
+            android:layout_marginLeft="@dimen/_60sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:id="@+id/btnconfirm"
+            />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_30sdp"
+                android:layout_below="@+id/textEmailRequest"
+                android:text="DELETE"
+                android:background="@drawable/btndelete"
+                android:textColor="#807f7f"
+                android:id="@+id/btndelete"
+                android:layout_marginLeft="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_toRightOf="@+id/btnconfirm"
+                />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

@@ -1,0 +1,50 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+    tools:context="com.gbstracking.gbstracking.nearesttransportion">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/Auttoo"
+            app:cardCornerRadius="5dp"
+            app:cardBackgroundColor="@android:color/white"
+            app:cardElevation="7dp">
+
+            <android.support.v7.widget.Toolbar
+                android:layout_width="match_parent"
+                android:id="@+id/toolbatrans"
+                android:layout_height="?attr/actionBarSize"
+                app:popupTheme="@style/PopupOverlay">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/Nearestplaces"
+                    android:textColor="#08c3d3"
+                    android:paddingRight="@dimen/_50sdp"
+                    android:textSize="@dimen/_14sdp"
+                    />
+
+
+
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.v7.widget.CardView>
+
+
+        <fragment
+            android:id="@+id/maps"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+
+    </RelativeLayout>
+    <include layout="@layout/sheetnearestplace"/>
+</android.support.design.widget.CoordinatorLayout>

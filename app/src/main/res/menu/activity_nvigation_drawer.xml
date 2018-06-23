@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/home"
+            android:icon="@drawable/homee"
+            android:title="@string/home" />
+        <item
+            android:id="@+id/addfriend"
+            android:icon="@drawable/ic_people_black_24dp"
+            android:title="@string/freid"/>
+        <item
+            android:id="@+id/wrn"
+            android:icon="@drawable/ic_warning_black_24dp"
+            android:title="@string/denger" />
+        <item
+            android:id="@+id/transport"
+            android:icon="@drawable/nearestplace"
+            android:title="@string/transport"/>
+        <item
+            android:id="@+id/Search"
+            android:icon="@drawable/ic_menu_search"
+            android:title="@string/Search"/>
+
+        <item
+            android:id="@+id/invite"
+            android:icon="@drawable/ic_menu_share"
+            android:title="@string/invitefriends"/>
+
+
+                <item
+                    android:id="@+id/logoutt"
+                    android:icon="@drawable/ic_menu_send"
+                    android:title="@string/logout" />
+
+    </group>
+
+
+
+</menu>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="twitter">#1cb6da</color>
+    <color name="google">#e65c28</color>
+    <color name="face">#2a30de</color>
+<color name="your_unselected_text_color">#282829</color>
+        <color name="bgBottomNavigation">#fe485a</color>
+    <color name="black_semi_transparent">#B2000000</color>
+    <color name="half_black">#808080</color>
+    <color name="white">#fafafa</color>
+    <color name="white_pressed">#f1f1f1</color>
+    <color name="pink">#e91e63</color>
+    <color name="pink_pressed">#ec407a</color>
+    <color name="blue_semi_transparent">#805677fc</color>
+    <color name="blue_semi_transparent_pressed">#80738ffe</color>
+
+
+        <color name="primary">#ddba76</color>
+        <color name="primary_dark">#303F9F</color>
+        <color name="accent">#F50056</color>
+        <color name="text_primary">#FFFFFF</color>
+        <color name="bkg_card">#8C9EFF</color>
+
+        <color name="colorWhite1">#F7F7F7</color>
+        <color name="colorblack">#000000</color>
+        <color name="color_texmenutop">#989898</color>
+    <color name="colortext2">#172331</color>
+    <color name="colortext">#707070</color>
+    <color name="defaultTextColor">@android:color/black</color>
+    <color name="defaultBackgroundColor">@android:color/transparent</color>
+
+    <color name="transparent">#00000000</color>
+    <!-- dots inactive colors -->
+    <color name="dot_dark_screen1">#c9c8c8</color>
+    <color name="background">#14476a7e</color>
+
+    <!-- dots active colors -->
+    <color name="dot_light_screen1">#003c5c</color>
+
+
+    <array name="array_dot_active">
+        <item>@color/dot_light_screen1</item>
+        <item>@color/dot_light_screen1</item>
+        <item>@color/dot_light_screen1</item>
+    </array>
+
+    <array name="array_dot_inactive">
+        <item>@color/dot_dark_screen1</item>
+        <item>@color/dot_dark_screen1</item>
+        <item>@color/dot_dark_screen1</item>
+
+    </array>
+
+</resources>

@@ -1,0 +1,38 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:layoutDirection="ltr"
+    tools:context="com.gbstracking.gbstracking.Share">
+
+    <!-- TODO: Update blank fragment layout -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        >
+    <Button
+        android:layout_width="@dimen/_250sdp"
+        android:layout_height="wrap_content"
+        android:text="@string/invite"
+        android:textColor="#ff8800"
+        android:textAllCaps="false"
+        android:textSize="@dimen/_20sdp"
+        android:textStyle="italic"
+        android:layout_toRightOf="@+id/friendsicon"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:background="@drawable/bceditsecretnumber"
+        android:layout_marginRight="@dimen/_20sdp"
+        android:id="@+id/invite"
+        />
+
+    <ImageView
+        android:layout_width="@dimen/_70sdp"
+        android:layout_height="@dimen/_70sdp"
+        android:src="@drawable/friendsicon"
+        android:id="@+id/friendsicon"
+        />
+
+    </RelativeLayout>
+</RelativeLayout>
