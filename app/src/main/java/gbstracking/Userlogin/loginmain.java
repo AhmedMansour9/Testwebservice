@@ -2,6 +2,7 @@ package gbstracking.Userlogin;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -34,6 +35,8 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.gbstracking.R;
+
+import gbstracking.friends.ActivityFriend;
 import gbstracking.verfeyphone.verfieymobile;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -111,13 +114,13 @@ public class loginmain extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
-        checkInfo=new CheckgbsAndNetwork(getApplicationContext());
+        checkInfo=new CheckgbsAndNetwork(loginmain.this);
         setContentView(R.layout.activitylogin);
-        progressBar = findViewById(R.id.pProgressBarr);
+
         loguser = findViewById(R.id.loginname);
         check = findViewById(R.id.checkbox);
         logpass = findViewById(R.id.loginpassword);
-
+        progressBar=findViewById(R.id.progressBarlogin);
 
         mAuth = FirebaseAuth.getInstance();
         mCallbackManager = CallbackManager.Factory.create();
@@ -143,12 +146,7 @@ public class loginmain extends AppCompatActivity {
     }
 
 
-    private boolean isNetworkConnected() {
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE); // 1
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo(); // 2
-        return networkInfo != null && networkInfo.isConnected(); // 3
-    }
+
     //ValidaTeEmail
     private static boolean isValidEmail(String email) {
         return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
@@ -177,8 +175,13 @@ public class loginmain extends AppCompatActivity {
     // Sign In function Starts From Here.
     public void UserSignInMethod(){
         // Passing Google Api Client into Intent.
-        Intent AuthIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-        startActivityForResult(AuthIntent, RequestSignInCode);
+        if (checkInfo.isNetworkAvailable(loginmain.this)) {
+            Intent AuthIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+            startActivityForResult(AuthIntent, RequestSignInCode);
+
+        }else {
+            checkInfo.ShowNetworkdialoge();
+        }
     }
     public void FirebaseUserAuth(GoogleSignInAccount googleSignInAccount) {
         AuthCredential authCredential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
@@ -235,28 +238,36 @@ public class loginmain extends AppCompatActivity {
         btn_fb_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LoginManager.getInstance().logInWithReadPermissions(loginmain.this, Arrays.asList("email", "public_profile"));
-                LoginManager.getInstance().registerCallback(mCallbackManager,
-                        new FacebookCallback<LoginResult>() {
-                            @Override
-                            public void onSuccess(LoginResult loginResult) {
-                                Log.d("Success", "Login");
-                                handleFacebookAccessToken(loginResult.getAccessToken());
-                            }
-                            @Override
-                            public void onCancel() {
+                if(checkInfo.isNetworkAvailable(loginmain.this)) {
+                    LoginManager.getInstance().logInWithReadPermissions(loginmain.this, Arrays.asList("email", "public_profile"));
+                    LoginManager.getInstance().registerCallback(mCallbackManager,
+                            new FacebookCallback<LoginResult>() {
+                                @Override
+                                public void onSuccess(LoginResult loginResult) {
+                                    Log.d("Success", "Login");
+                                    handleFacebookAccessToken(loginResult.getAccessToken());
+                                }
+
+                                @Override
+                                public void onCancel() {
 //                                Toast.makeText(loginmain.this, "Login Cancel", Toast.LENGTH_LONG).show();
-                            }
-                            @Override
-                            public void onError(FacebookException exception) {
-                                Toast.makeText(loginmain.this, "Turn on Internet", Toast.LENGTH_LONG).show();
-                            }
-                        });
+                                }
+
+                                @Override
+                                public void onError(FacebookException exception) {
+                                    Toast.makeText(loginmain.this, "Turn on Internet", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                }else {
+                    checkInfo.ShowNetworkdialoge();
+                }
             }
         });
     }
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
+       progressBar.setVisibility(View.VISIBLE);
+
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -265,7 +276,7 @@ public class loginmain extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-
+                            progressBar.setVisibility(View.GONE);
                             FirebaseUser user = mAuth.getCurrentUser();
                             currnetuser= FirebaseDatabase.getInstance().getReference();
                             final String useer=user.getDisplayName();
@@ -292,19 +303,20 @@ public class loginmain extends AppCompatActivity {
                 });
     }
     public void GoogleSignOpition(){
-        googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        googleApiClient = new GoogleApiClient.Builder(loginmain.this)
-                .enableAutoManage(loginmain.this , new GoogleApiClient.OnConnectionFailedListener() {
-                    @Override
-                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+            googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+            googleApiClient = new GoogleApiClient.Builder(loginmain.this)
+                    .enableAutoManage(loginmain.this, new GoogleApiClient.OnConnectionFailedListener() {
+                        @Override
+                        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
-                    }
-                } /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, googleSignInOptions)
-                .build();
+                        }
+                    } /* OnConnectionFailedListener */)
+                    .addApi(Auth.GOOGLE_SIGN_IN_API, googleSignInOptions)
+                    .build();
+
     }
 
   public void CheckedBox(){
@@ -341,21 +353,24 @@ public class loginmain extends AppCompatActivity {
               dialogButton.setOnClickListener(new View.OnClickListener() {
                   @Override
                   public void onClick(View v) {
-                      if (isNetworkConnected()) {
+                      if (checkInfo.isNetworkAvailable(loginmain.this)) {
+
                           EditText edit = dialog.findViewById(R.id.getppassword);
-                          String EMAIL = edit.getText().toString().trim();
-                          if (edit.getText().toString().isEmpty()) {
+
+                      String EMAIL = edit.getText().toString().trim();
+                      if (edit.getText().toString().isEmpty()) {
 //                              Toast.makeText(getBaseContext(), "Check Null Values", Toast.LENGTH_SHORT).show();
-                          } else if (EMAIL.isEmpty()||!isValidEmail(EMAIL)){
-                              edit.setError(getResources().getString(R.string.invalidemail));
-                          }
-                          else{
-                              emaaail=edit.getText().toString();
-                              sendResetPasswordEmail();
-                              dialog.dismiss();
-                          }}else{
-                          Toast.makeText(getBaseContext(),"Error , You Should Open Internet!",Toast.LENGTH_LONG).show();
+                      } else if (EMAIL.isEmpty() || !isValidEmail(EMAIL)) {
+                          edit.setError(getResources().getString(R.string.invalidemail));
+                      } else {
+                          emaaail = edit.getText().toString();
+                          sendResetPasswordEmail();
+                          dialog.dismiss();
                       }
+                  }else {
+                      checkInfo.ShowNetworkdialoge();
+                  }
+
                   }
               });
               dialog.show();
@@ -386,7 +401,7 @@ public class loginmain extends AppCompatActivity {
           @Override
           public void onClick(View view) {
               mAuth = FirebaseAuth.getInstance();
-              if (checkInfo.isNetworkAvailable(getApplicationContext())) {
+              if (checkInfo.isNetworkAvailable(loginmain.this)) {
                   user = mAuth.getCurrentUser();
                   if (loguser.getText().toString().isEmpty() || logpass.getText().toString().isEmpty())
                   {
@@ -406,7 +421,6 @@ public class loginmain extends AppCompatActivity {
                               progressBar.setVisibility(View.GONE);
                               if (!task.isSuccessful()) {
                                   // there was an error
-                                  Toast.makeText(getApplication(), "", Toast.LENGTH_LONG).show();
                               } else {
                                   mAuth = FirebaseAuth.getInstance();
                                   user = mAuth.getCurrentUser();

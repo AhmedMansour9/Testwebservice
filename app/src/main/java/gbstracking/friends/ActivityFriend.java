@@ -146,7 +146,6 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
     EditText getmessage;
     public String massege;
     Handler hn;
-    public static final String URL_SEND_SINGLE_PUSH = "https://zamaleksongs.000webhostapp.com/sendSinglePush.php";
     Dialog dialog;
     String id;
     DatabaseReference databaseRefere;
@@ -154,7 +153,6 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
     double longe;
     Marker marker2;
     TextView textstreet;
-    Time today;
     DatabaseReference data;
     TextView texttime;
     TextView textday;
@@ -162,11 +160,7 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
     TextView textdistance;
     TextView textdistancewalk;
     List<Polyline> polylines;
-    private static final int MESSAGE_ID_SAVE_CAMERA_POSITION = 1;
-    private static final int MESSAGE_ID_READ_CAMERA_POSITION = 2;
-    private CameraPosition lastCameraPosition;
     ImageView btndistance;
-    ImageView btndistanceWalk;
     ImageView draw;
     LatLng laty;
     TextView texttimeCar;
@@ -191,7 +185,6 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
     GeoDataClient mGeoDataClient;
     public boolean firstTime = true;
     FloatingActionButton floatbtn;
-    Handler handler;
     String ID;
     String addres;
     DatabaseReference databaseRefer;
@@ -220,7 +213,7 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
         texttimeCar = findViewById(R.id.textdistanceCar);
         draw = findViewById(R.id.draw);
         btndistance = findViewById(R.id.distanceCar);
-        btndistanceWalk = findViewById(R.id.distance);
+
         texttime = findViewById(R.id.edittime);
         textday = findViewById(R.id.editday);
         textdistance = findViewById(R.id.textdistanceCar);
@@ -301,6 +294,7 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
         Draw2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                GoneAllvisabilty();
                 if(latyy!=null||laty!=null) {
                     try {
                         boolean success = googleMap.setMapStyle(
@@ -737,7 +731,6 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
                                     new Response.Listener<String>() {
                                         @Override
                                         public void onResponse(String response) {
-                                            Toast.makeText(ActivityFriend.this, ""+response, Toast.LENGTH_SHORT).show();
                                             progressDialog.dismiss();
                                             dialog.cancel();
                                         }
@@ -1017,7 +1010,7 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
                         blacklineoption.jointType(JointType.ROUND);
                         blacklineoption.addAll(polinlist);
                         black = googleMap.addPolyline(blacklineoption);
-                        googleMap.addMarker(new MarkerOptions().position(polinlist.get(polinlist.size() - 1)));
+//                        googleMap.addMarker(new MarkerOptions().position(polinlist.get(polinlist.size() - 1)));
                         ValueAnimator valueAnimator = ValueAnimator.ofInt(0, 100);
                         valueAnimator.setDuration(2000);
                         valueAnimator.setInterpolator(new LinearInterpolator());

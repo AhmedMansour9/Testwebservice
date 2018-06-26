@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Address;
@@ -27,6 +28,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
@@ -125,6 +127,7 @@ import gbstracking.recycleviewfriends.Friendsetandget;
 import gbstracking.searchplaces.InfoWindowData;
 import gbstracking.searchplaces.windowinfofriend;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
@@ -154,7 +157,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     private LocationCallback mLocationCallback;
 
     com.getbase.floatingactionbutton.FloatingActionButton Share;
-     com.getbase.floatingactionbutton.FloatingActionButton LOCATION;
+     com.getbase.floatingactionbutton.FloatingActionButton btngetlocation;
     IGoogleApi mService;
     LatLng latyy;
     private static final int[] COLORS = new int[]{R.color.colorPrimaryDark, R.color.colorPrimary, R.color.cardview_light_background, R.color.colorAccent, R.color.primary_dark_material_light};
@@ -177,10 +180,13 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     List<GetandSetFriendOnlineHome> lstfriends = new ArrayList<>();
     RecyclerView recyc;
     View v;
+    int MY_PERMISSIONS_REQUEST_LOCATION=99;
     GetandSetFriendOnlineHome home;
     PendingResult<LocationSettingsResult> result;
     final public static int REQUEST_LOCATION_CODE = 99;
     CoordinatorLayout framehome;
+    SharedPreferences sharedPreferences;
+    String  KEY;
     public home() {
     }
 
@@ -189,9 +195,9 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        FacebookSdk.sdkInitialize(getApplicationContext());
+     //   FacebookSdk.sdkInitialize(getApplicationContext());
         v = inflater.inflate(R.layout.fragment_home, container, false);
-        LOCATION=v.findViewById(R.id.LOCATION);
+
         Share=v.findViewById(R.id.share);
         framehome=v.findViewById(R.id.framehome);
         context = this.getContext();
@@ -208,15 +214,21 @@ public class home extends Fragment implements itemClickListener, RoutingListener
         startmove = v.findViewById(R.id.dirstart);
         datalocation = FirebaseDatabase.getInstance().getReference("Location");
         data = FirebaseDatabase.getInstance().getReference("Friends");
-
+        dates = FirebaseDatabase.getInstance().getReference("Friends");
         auto = v.findViewById(R.id.autoComp);
-//        btngetlocation=v.findViewById(R.id.myLocationBtn);
+        btngetlocation=v.findViewById(R.id.LOCATION);
         Toolbar toolbar = v.findViewById(R.id.toolbarauto);
         mService = Common.iGoogleApi();
         u = new GetandSetFriendOnlineHome();
         t = new Friendsetandget();
-
+        sharedPreferences=getApplicationContext().getSharedPreferences("Phone",MODE_PRIVATE);
+        String phone=sharedPreferences.getString("phone","");
+        if(!phone.isEmpty()){
+            DatabaseReference data=FirebaseDatabase.getInstance().getReference().child("Users");
+            data.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("phone").setValue(phone);
+        }
         Recyclview();
+        checkLocationPermission();
 
 
         Nvigation.toggle = new ActionBarDrawerToggle(
@@ -275,7 +287,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                 final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
 
-//                userLocationFAB(240);
+
             }
         });
         SendatatoAdapter();
@@ -293,18 +305,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
         locationReques.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         }
-//        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationReques, this);
-        mLocationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-                //Here is your location result
-            }
-        };
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-
-        mFusedLocationClient.requestLocationUpdates(locationReques, mLocationCallback, null);
-
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationReques, this);
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationReques);
@@ -352,7 +353,6 @@ public class home extends Fragment implements itemClickListener, RoutingListener
             case REQUEST_LOCATION_CODE:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-//                        result.Call(1);
                         buildGoogleapiclint();
                         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                             return;
@@ -390,6 +390,13 @@ public class home extends Fragment implements itemClickListener, RoutingListener
         lon = location.getLongitude();
         latyy = new LatLng(lat, lon);
         polinlist.add(latyy);
+
+        btngetlocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Camerapoistion(lat, lon);
+            }
+        });
 
         Share.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -444,6 +451,16 @@ public class home extends Fragment implements itemClickListener, RoutingListener
 
 
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+//        if (ContextCompat.checkSelfPermission(getApplicationContext(),
+//                Manifest.permission.ACCESS_FINE_LOCATION)
+//                == PackageManager.PERMISSION_GRANTED) {
+//           buildGoogleapiclint();
+//            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationReques, this);        }
+    }
+
     private synchronized void buildGoogleapiclint() {
         mGoogleApiClient = new GoogleApiClient.Builder(getContext())
                 .addConnectionCallbacks(this)
@@ -466,10 +483,49 @@ public class home extends Fragment implements itemClickListener, RoutingListener
         inty.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(inty);
     }
+    public boolean checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new android.app.AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.info)
+                        .setMessage(R.string.gbsmessage)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(getActivity(),
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_LOCATION);
+                            }
+                        })
+                        .create()
+                        .show();
+
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     public void Chaneeuseronline() {
         IDd = userR.getUid();
-         DatabaseReference data = FirebaseDatabase.getInstance().getReference("Users").child(IDd);
+          DatabaseReference data = FirebaseDatabase.getInstance().getReference("Users").child(IDd);
         data.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -479,16 +535,17 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                            String KEY = dataSnapshot1.getKey();
-                            dates = FirebaseDatabase.getInstance().getReference("Friends").child(KEY);
-                            dates.orderByChild("id").equalTo(IDd).addListenerForSingleValueEvent(new ValueEventListener() {
+                             KEY = dataSnapshot1.getKey();
+                            dates.child(KEY).orderByChild("id").equalTo(IDd).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     for (DataSnapshot dataa : dataSnapshot.getChildren()) {
-                                        String email = dataa.child("email").getValue().toString();
-                                        if (email != null) {
-                                            dataa.getRef().child("online").setValue(online.getOnline());
-                                            dataa.getRef().child("online").onDisconnect().setValue(false);
+                                        if (dataa.exists()) {
+                                            String email = dataa.child("email").getValue().toString();
+                                            if (email != null) {
+                                                dataa.getRef().child("online").setValue(online.getOnline());
+                                                dataa.getRef().child("online").onDisconnect().setValue(false);
+                                            }
                                         }
                                     }
                                 }
@@ -547,24 +604,18 @@ public class home extends Fragment implements itemClickListener, RoutingListener
 
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-        }
-    }
+
     @Override
     public void onPause() {
         super.onPause();
-//        if (ContextCompat.checkSelfPermission(getActivity(),
-//                Manifest.permission.ACCESS_FINE_LOCATION)
-//                == PackageManager.PERMISSION_GRANTED) {
-//        }
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+                mGoogleApiClient.disconnect();
+            }
         }
+
     }
 
     @Override
@@ -577,7 +628,34 @@ public class home extends Fragment implements itemClickListener, RoutingListener
 
 
     }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 99: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
+                    // permission was granted, yay! Do the
+                    // location-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                    buildGoogleapiclint();
+                        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationReques, this);                    }
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+
+                }
+                return;
+            }
+
+        }
+    }
 
 public void online(){
     IDd=userR.getUid();

@@ -31,11 +31,18 @@ public class social extends Fragment {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_SEND);
+             /*   Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("text/plain");
                 intent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=zamaleekonlinee.zamalekonline");
                 intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Check out this App!");
                 startActivity(Intent.createChooser(intent, "Share"));
+*/
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=zamaleekonlinee.zamalekonline");
+                sendIntent.setType("text/plain");
+                startActivity(Intent.createChooser(sendIntent,
+                        "Share"));
 
 
             }

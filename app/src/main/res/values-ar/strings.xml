@@ -3,7 +3,7 @@
 
     <string name="Direction">الاتجاهات </string>
     <string name="Startdirection">أبدأ التحرك </string>
-    <string name="app_name">GBs Tracking</string>
+    <string name="app_name">موقع الاصدقاء </string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -99,7 +99,7 @@
     <string name="invalidemail">البريد الالكتروني خطأ </string>
     <string name="enterpas">ادخل الرقم السري </string>
     <string name="verfiymail">تم إرسال رسالة التحقق إلى</string>
-    <string name="alreadyuser">هذا البريد الإلكتروني موجود بالفعل </string>
+    <string name="alreadyuser">البريد الالكتروني غير صالح </string>
     <string name="fullinform">أدخل بياناتك اولا </string>
     <string name="confirm">قبول </string>
     <string name="delete">حذف  </string>
@@ -129,4 +129,8 @@
     <string name="nofriends">لا يوحد اصدقاء لديك </string>
     <string name="friendsloc">موقع الاصدقاء</string>
     <string name="reduis">نصف القطر </string>
+    <string name="gbsmessage">للحصول علي افضل النتائج , يجب عليك تفعيل الموقع الجغرافي للجهاز</string>
+    <string name="info">التفاصيل </string>
+    <string name="ok">موافق </string>
+    <string name="deletefriend">هل تريد حذف صديقك ؟</string>
 </resources>

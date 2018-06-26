@@ -66,17 +66,13 @@ public class verfieymobile extends AppCompatActivity {
             } else {
                 if (loginResult.getAccessToken() != null) {
                     toastMessage = "Success:" + loginResult.getAccessToken().getAccountId();
+                    getAccount();
+                    startActivity(new Intent(verfieymobile.this, Nvigation.class));
+                    finish();
+
                 }
-                getAccount();
-                startActivity(new Intent(verfieymobile.this, Nvigation.class));
-                finish();
             }
 
-            Toast.makeText(
-                    getApplicationContext(),
-                    toastMessage,
-                    Toast.LENGTH_LONG)
-                    .show();
         }
     }
     private void getAccount() {
@@ -90,16 +86,16 @@ public class verfieymobile extends AppCompatActivity {
                 Log.e("verf", "onSuccess: "+phoneNumber.toString());
                 String phoneNumberString = phoneNumber.toString();
 
-                Toast.makeText(verfieymobile.this, ""+phoneNumberString, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(verfieymobile.this, ""+phoneNumberString, Toast.LENGTH_SHORT).show();
                 SharedPreferences.Editor editor = getSharedPreferences("Phone", MODE_PRIVATE).edit();
                 editor.putString("phone",phoneNumberString);
                 editor.commit();
                 // Surface the result to your user in an appropriate way.
-                Toast.makeText(
-                        getApplicationContext(),
-                        phoneNumberString,
-                        Toast.LENGTH_LONG)
-                        .show();
+//                Toast.makeText(
+//                        getApplicationContext(),
+//                        phoneNumberString,
+//                        Toast.LENGTH_LONG)
+//                        .show();
             }
 
             @Override

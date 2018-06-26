@@ -11,6 +11,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.firebase.client.core.Constants;
+import com.gbstracking.R;
 
 /**
  * Created by HP on 18/04/2018.
@@ -23,8 +24,8 @@ public class CheckgbsAndNetwork {
     }
     public void showSettingsAlert() {
         android.support.v7.app.AlertDialog.Builder alertDialog = new android.support.v7.app.AlertDialog.Builder(context);
-        alertDialog.setTitle("GPS  settings");
-        alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
+        alertDialog.setTitle(R.string.info);
+        alertDialog.setMessage(R.string.gbsmessage);
         alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -45,7 +46,6 @@ public class CheckgbsAndNetwork {
         NetworkInfo activeNetworkInfo = connMgr.getActiveNetworkInfo();
 
         if (activeNetworkInfo != null) { // connected to the internet
-            Toast.makeText(context, activeNetworkInfo.getTypeName(), Toast.LENGTH_SHORT).show();
 
             if (activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
                 return true;

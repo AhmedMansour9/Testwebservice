@@ -5,6 +5,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -78,6 +79,7 @@ import gbstracking.friends.IGoogleApi;
 import gbstracking.mainactivity.CustomWinfoView;
 import gbstracking.mainactivity.itemClickListener;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
 import static gbstracking.mainactivity.home.latLngBounds;
 
 
@@ -114,6 +116,7 @@ public class Searchplaces extends Fragment implements itemClickListener,RoutingL
     List<LatLng> polinlist;
     boolean firstTime = true;
     List<Polyline> polylines;
+    int MY_PERMISSIONS_REQUEST_LOCATION=99;
     final int REQUEST_LOCATION_CODE =99;
     private static final int[] COLORS = new int[]{R.color.colorPrimaryDark, R.color.colorPrimary, R.color.cardview_light_background, R.color.colorAccent, R.color.primary_dark_material_light};
     @Override
@@ -136,7 +139,7 @@ public class Searchplaces extends Fragment implements itemClickListener,RoutingL
         ButtonSheet();
         sheetBehavior = BottomSheetBehavior.from(layoutBottomSheet);
         sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
+        checkLocationPermission();
         Nvigation.toggle = new ActionBarDrawerToggle(
                 getActivity(), Nvigation.drawer, toolbar,R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
@@ -228,6 +231,45 @@ public class Searchplaces extends Fragment implements itemClickListener,RoutingL
         placeAutocompleteAdapter=new PlaceAutocompleteAdapter(context,mGoogleApiClient,latLngBounds,null);
         auto.setAdapter(placeAutocompleteAdapter);
         auto.setOnItemClickListener(mAutocomplete);
+    }
+    public boolean checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new android.app.AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.info)
+                        .setMessage(R.string.gbsmessage)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(getActivity(),
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_LOCATION);
+                            }
+                        })
+                        .create()
+                        .show();
+
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+            return false;
+        } else {
+            return true;
+        }
     }
 
     @SuppressLint("RestrictedApi")
@@ -333,25 +375,31 @@ public class Searchplaces extends Fragment implements itemClickListener,RoutingL
 
     }
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch(requestCode)
-        {
-            case REQUEST_LOCATION_CODE:
-                if(grantResults.length >0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                {
-                    if(ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_FINE_LOCATION) !=  PackageManager.PERMISSION_GRANTED)
-                    {
-                        if(mGoogleApiClient == null)
-                        {
-                            buildGoogleapiclint();
-                        }
-                        googleMap.setMyLocationEnabled(true);
-                    }
-                }
-                else
-                {
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 99: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // location-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        buildGoogleapiclint();
+                        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationReques, this);                    }
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
 
                 }
+                return;
+            }
+
         }
     }
 

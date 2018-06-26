@@ -37,6 +37,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 
 import com.gbstracking.R;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -147,15 +148,39 @@ public class Nvigation extends AppCompatActivity
                     texName =  headerView.findViewById(R.id.texkName);
                     texName.setText(user.getDisplayName());
 
+
+
                     if(user.getPhotoUrl()!=null){
                       View headerVi = navigationView.getHeaderView(0);
                        i=headerVi.findViewById(R.id.imagecom);
                       CircleImageView c=headerView.findViewById(R.id.person_image);
-                      Picasso.with(getApplicationContext())
-                              .load(user.getPhotoUrl())
-                              .placeholder(R.drawable.emptyprofile)
-                              .into(c);
-                      i.setVisibility(View.INVISIBLE);
+                        String photoUrl = firebaseAuth.getCurrentUser().getPhotoUrl().toString();
+                        for (UserInfo profile : firebaseAuth.getCurrentUser().getProviderData()) {
+                            System.out.println(profile.getProviderId());
+                            // check if the provider id matches "facebook.com"
+                            if (profile.getProviderId().equals("facebook.com")) {
+
+                                String facebookUserId = profile.getUid();
+
+
+                                photoUrl = "https://graph.facebook.com/" + facebookUserId + "/picture?height=800";
+
+                                Picasso.with(getApplicationContext())
+                                        .load(photoUrl)
+                                        .placeholder(R.drawable.emptyprofile)
+                                        .into(c);
+                                i.setVisibility(View.INVISIBLE);
+
+                            }else {
+                                Picasso.with(getApplicationContext())
+                                        .load(user.getPhotoUrl())
+                                        .placeholder(R.drawable.emptyprofile)
+                                        .into(c);
+                                i.setVisibility(View.INVISIBLE);
+
+                            }
+                        }
+
                   }else if(user.getPhotoUrl()==null) {
                       View headerVie = navigationView.getHeaderView(0);
                       i=headerVie.findViewById(R.id.imagecom);
@@ -274,6 +299,7 @@ public class Nvigation extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+
     }
 
 
@@ -370,36 +396,6 @@ public class Nvigation extends AppCompatActivity
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
-    }
-
-
-
-
-
-    private void showSettingsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Need Permissions");
-        builder.setMessage("This app needs permission to use this feature. You can grant them in app settings.");
-        builder.setPositiveButton("GOTO SETTINGS", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                openSettings();
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        builder.show();
-    }
-    private void openSettings() {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        Uri uri = Uri.fromParts("package","gbstracking" , null);
-        intent.setData(uri);
-        startActivityForResult(intent, 101);
     }
 
     @Override

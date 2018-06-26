@@ -5,6 +5,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -44,6 +45,7 @@ import android.widget.Toast;
 import com.directions.route.Route;
 import com.directions.route.RouteException;
 import com.directions.route.RoutingListener;
+import com.facebook.FacebookSdk;
 import com.gbstracking.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -102,7 +104,7 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
         double latitude,longitude;
         double lati,longe;
         private static final int[] COLORS = new int[]{R.color.colorPrimaryDark, R.color.colorPrimary, R.color.cardview_light_background, R.color.colorAccent, R.color.primary_dark_material_light};
-
+        int MY_PERMISSIONS_REQUEST_LOCATION=99;
         @BindView(R.id.doctor)ImageView btndoc;
         @BindView(R.id.subway)ImageView train;
         @BindView(R.id.hospital)ImageView hospital;
@@ -145,7 +147,7 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
          spinner = v.findViewById(R.id.spinner);
         spinnerreduis= v.findViewById(R.id.spinnerreduis);
          listreduis=new ArrayList<>();
-
+        checkLocationPermission();
         sheetBehavior = BottomSheetBehavior.from(sheet);
         sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         ButtonSheet();
@@ -280,7 +282,48 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
 
         return v;
     }
-    public void moredetails(){
+        public boolean checkLocationPermission() {
+            if (ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                        Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                    // Show an explanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+                    new android.app.AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.info)
+                            .setMessage(R.string.gbsmessage)
+                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    //Prompt the user once explanation has been shown
+                                    ActivityCompat.requestPermissions(getActivity(),
+                                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                            MY_PERMISSIONS_REQUEST_LOCATION);
+                                }
+                            })
+                            .create()
+                            .show();
+
+
+                } else {
+                    // No explanation needed, we can request the permission.
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            MY_PERMISSIONS_REQUEST_LOCATION);
+                }
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+
+        public void moredetails(){
             details.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -295,14 +338,12 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
                 sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
                  if(chechfriend&&user!=null){
-                     Toast.makeText(context, "false", Toast.LENGTH_SHORT).show();
                      la = LAT;
                      lo = LON;
                  }else {
 
                      la=latitude;
                      lo=longitude;
-                     Toast.makeText(context, "true"+latitude+longe, Toast.LENGTH_SHORT).show();
                  }
                 Object dataTransfer[] = new Object[2];
                 getNearbyPlacesData = new GetNearbyPlacesData();
@@ -377,7 +418,6 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
                dataTransfer[0] = googleMap;
                dataTransfer[1] = url;
                getNearbyPlacesData.execute(dataTransfer);
-               Toast.makeText(context, "Showing Nearby Hospitals", Toast.LENGTH_SHORT).show();
            }
        });
    }
@@ -519,7 +559,36 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
           });
 
       }
-    public void Getfriendslocation(final firebae f){
+        @Override
+        public void onRequestPermissionsResult(int requestCode,
+                                               String permissions[], int[] grantResults) {
+            switch (requestCode) {
+                case 99: {
+                    // If request is cancelled, the result arrays are empty.
+                    if (grantResults.length > 0
+                            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                        // permission was granted, yay! Do the
+                        // location-related task you need to do.
+                        if (ContextCompat.checkSelfPermission(FacebookSdk.getApplicationContext(),
+                                Manifest.permission.ACCESS_FINE_LOCATION)
+                                == PackageManager.PERMISSION_GRANTED) {
+                            buildGoogleapiclint();
+                            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationReques, this);                    }
+
+                    } else {
+
+                        // permission denied, boo! Disable the
+                        // functionality that depends on this permission.
+
+                    }
+                    return;
+                }
+
+            }
+        }
+
+        public void Getfriendslocation(final firebae f){
 
         DatabaseReference datas=FirebaseDatabase.getInstance().getReference().child("Users");
         Query query=datas.orderByChild("username").equalTo(user);
@@ -718,13 +787,14 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
         @Override
         public void onPause() {
             super.onPause();
-//        if (ContextCompat.checkSelfPermission(getActivity(),
-//                Manifest.permission.ACCESS_FINE_LOCATION)
-//                == PackageManager.PERMISSION_GRANTED) {
-//        }
-            if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-                mGoogleApiClient.disconnect();
+            if (ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+                    mGoogleApiClient.disconnect();
+                }
             }
+
         }
 
         @Override

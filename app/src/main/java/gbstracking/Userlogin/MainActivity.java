@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
         editpasworrd = findViewById(R.id.pass);
         editusername = findViewById(R.id.name);
         auth = getInstance();
-        progressBar = findViewById(R.id.progressBarr);
+        progressBar = findViewById(R.id.progressBarlogin);
 
         Registration();
         Font();
@@ -109,11 +109,6 @@ public class MainActivity extends Activity {
 
                       } else{
                           username = editusername.getText().toString();
-                          share = getSharedPreferences("Name", MODE_PRIVATE);
-                          edit = share.edit();
-                          edit.putBoolean("user",true);
-                          edit.putString("name", username);
-                          edit.apply();
                           String  pas = editpasworrd.getText().toString();
                           String Emaail = editemail.getText().toString();
                           progressBar.setVisibility(View.VISIBLE);
@@ -125,6 +120,12 @@ public class MainActivity extends Activity {
                                       Toast.makeText(MainActivity.this, getResources().getString(R.string.alreadyuser) ,
                                               Toast.LENGTH_SHORT).show();
                                   } else {
+                                      share = getSharedPreferences("Name", MODE_PRIVATE);
+                                      edit = share.edit();
+                                      edit.putBoolean("user",true);
+                                      edit.putString("name", username);
+                                      edit.apply();
+
                                       FirebaseUser user = getInstance().getCurrentUser();
                                       user.sendEmailVerification();
                                       Toast.makeText(MainActivity.this,

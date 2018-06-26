@@ -32,8 +32,8 @@
         />
    <de.hdodenhof.circleimageview.CircleImageView
     android:id="@+id/person_image"
-    android:layout_width="@dimen/_75sdp"
-    android:layout_height="@dimen/_55sdp"
+    android:layout_width="@dimen/_80sdp"
+    android:layout_height="@dimen/_60sdp"
     android:layout_gravity="center"
     android:layout_marginTop="20dp"
     android:layout_centerInParent="true"
@@ -46,14 +46,14 @@
             android:text=""
             android:paddingLeft="@dimen/_5sdp"
             android:paddingRight="@dimen/_5sdp"
-            android:layout_marginLeft="@dimen/_20sdp"
             android:textStyle="bold"
+            android:layout_centerHorizontal="true"
             android:textColor="#1F6ED4"
             android:layout_below="@+id/person_image"
             android:alpha="0.8"
             android:paddingBottom="@dimen/_2sdp"
             android:paddingTop="@dimen/_2sdp"
-            android:layout_marginTop="@dimen/_50sdp"
+            android:layout_marginTop="@dimen/_40sdp"
             android:background="@drawable/bctextheader"
             />
     </RelativeLayout>

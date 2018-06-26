@@ -172,7 +172,7 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:id="@+id/textday"
                         android:textColor="#101010"
-                        android:layout_marginRight="@dimen/_60sdp"
+                        android:layout_marginRight="@dimen/_40sdp"
                         android:textSize="@dimen/_11sdp"
                         android:layout_toLeftOf="@+id/edittime"
                         android:textStyle="bold"
@@ -308,7 +308,6 @@
                             android:layout_marginTop="@dimen/_15sdp"
                             android:layout_toLeftOf="@+id/draw"
                             android:text="@string/Animat"
-                            android:textStyle="bold"
                             android:textColor="#101010"
                             android:id="@+id/animat"
                             />

@@ -6,6 +6,7 @@ package gbstracking.recycleviewfriends;
  * Created by HP on 19/04/2018.
  */
 
+import android.Manifest;
 import android.app.AlertDialog;
 
 import android.app.ProgressDialog;
@@ -13,6 +14,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -21,7 +23,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -67,6 +71,7 @@ import java.util.HashSet;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import gbstracking.CheckgbsAndNetwork;
+import gbstracking.Userlogin.MainActivity;
 import gbstracking.friends.ActivityFriend;
 import gbstracking.mainactivity.home;
 
@@ -81,8 +86,11 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
         // Required empty public constructor
     }
     SwipeRefreshLayout mSwipeRefreshLayout;
-    public ChildEventListener mListener;
+    public ValueEventListener mListener;
+    String email;
     View v;
+    String id;
+    String ID;
     public String key;
     StorageReference s;
     private static int Glarlly = 1;
@@ -95,7 +103,6 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
     public static String EMail;
     String IDd;
     EditText friend;
-    public ArrayList<String> lst = new ArrayList<String>(); // Result will be holded Here
     public ArrayList<Friendsetandget> moviesList;
     Friendsetandget l;
     String userr;
@@ -107,16 +114,14 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
     UserID userid;
     DatabaseReference data;
     ProgressDialog progressDialog;
-    private Switch switchCli;
+
     CoordinatorLayout cor;
-    public static Boolean switchboolean;
-    public static Boolean Allswitch;
     public static ArrayList<Integer> listPositions;
     public static ArrayList<Boolean> listBoolean;
     ArrayList<Integer> myArrayList=new ArrayList<Integer>();
     ArrayList<Boolean> myArrayListboolean=new ArrayList<Boolean>();
     DatabaseReference databaseReference;
-
+    DatabaseReference mDatabaseRef;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -127,7 +132,7 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
         mDatabasE = FirebaseDatabase.getInstance().getReference("Friends");
         mDatabas = FirebaseDatabase.getInstance().getReference("Users");
          moviesList = new ArrayList<>();
-
+         mDatabaseRef = FirebaseDatabase.getInstance().getReference("Friends");
         editemai = v.findViewById(R.id.editfriend);
 
 
@@ -186,36 +191,60 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
         moviesList.clear();
         mAdapter.notifyDataSetChanged();
         mSwipeRefreshLayout.setRefreshing(true);
-        DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference("Friends").child(IDd);
-        mListener=mDatabaseRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Friendsetandget friendsetandget=dataSnapshot.getValue(Friendsetandget.class);
 
-                if(friendsetandget!=null &&!hasId(friendsetandget.getEmail())) {
-                    System.out.println("email: "+friendsetandget.getEmail());
-                    moviesList.add(0, friendsetandget);
-                    mAdapter.notifyDataSetChanged();
+       mListener=mDatabaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChild(IDd)){
+                   mDatabaseRef.child(IDd).addChildEventListener(new ChildEventListener() {
+                       @Override
+                       public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                           Friendsetandget friendsetandget=dataSnapshot.getValue(Friendsetandget.class);
+
+                           if(friendsetandget!=null &&!hasId(friendsetandget.getEmail())) {
+                               moviesList.add(0, friendsetandget);
+                               mAdapter.notifyDataSetChanged();
+                               mSwipeRefreshLayout.setRefreshing(false);
+                           }
+
+                       }
+
+                       @Override
+                       public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                       }
+
+                       @Override
+                       public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                       }
+
+                       @Override
+                       public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                       }
+
+                       @Override
+                       public void onCancelled(DatabaseError databaseError) {
+
+                       }
+                   });
+                }else{
+                    if (mSwipeRefreshLayout.isRefreshing())
+                    {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
                 }
 
-                mSwipeRefreshLayout.setRefreshing(false);
             }
+
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            public void onCancelled(DatabaseError databaseError) {
+
             }
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-            }
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
         });
 
-        if (mSwipeRefreshLayout.isRefreshing())
-        {
-            mSwipeRefreshLayout.setRefreshing(false);
-        }
+
     }
     @Override
     public void onClick(View view, int position) {
@@ -248,20 +277,25 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
     @Override
     public void onClickCallback(View view , final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Do You Want to Delete Your Friend ?");
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setMessage(getResources().getString(R.string.deletefriend));
+        builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String id =moviesList.get(position).getId();
-                String email= moviesList.get(position).getEmail();
+                if(MoviesAdapter.filteredList.isEmpty()) {
+                     id = moviesList.get(position).getId();
+                     email = moviesList.get(position).getEmail();
+                }else if(!MoviesAdapter.filteredList.isEmpty()){
+                     id = MoviesAdapter.filteredList.get(position).getId();
+                     email = MoviesAdapter.filteredList.get(position).getEmail();
 
+                }
 
                 Deleteuser(email,position);
                 Deleteuser2(id);
                 dialog.cancel();
             }
         });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
@@ -288,7 +322,7 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
           @Override
           public void onDataChange(DataSnapshot dataSnapshot) {
            if (dataSnapshot.exists()) {
-          for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+             for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
            userid = dataSnapshot1.getValue(UserID.class);
            USerid=userid.getId();
                       }
@@ -299,8 +333,6 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
            Toast.makeText(getApplicationContext(), "User Already your Friend", Toast.LENGTH_SHORT).show();
                }
             else{
-           Toast.makeText(getApplicationContext(), ""+USerid
-            , Toast.LENGTH_SHORT).show();
           data.child(USerid).orderByChild("email").equalTo(userR.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
            @Override
            public void onDataChange(DataSnapshot dataSnapshot) {
@@ -309,7 +341,8 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
           }
                     else if(!dataSnapshot.exists()){
             data.child(userid.getId()).push().child("email").setValue(userR.getEmail());
-             Toast.makeText(getApplicationContext(), "Sending Request", Toast.LENGTH_SHORT).show();}}
+                       editemai.setText("");
+                       Toast.makeText(getApplicationContext(), "Sending Request", Toast.LENGTH_SHORT).show();}}
                 @Override
                   public void onCancelled(DatabaseError databaseError) {}});}}
                  @Override
@@ -340,10 +373,9 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
                      moviesList.remove(position);
                      child.getRef().removeValue();
                      mAdapter.notifyDataSetChanged();
-                     databaseReference.removeValue();
-                     mDatabasE.child(IDd)
-                             .orderByChild("email").removeEventListener(mListener);
-                     mDatabas.removeEventListener(home.value);
+//                     mDatabasE.child(IDd)
+//                             .orderByChild("email").removeEventListener(mListener);
+//                     mDatabas.removeEventListener(home.value);
                  }
              }
              @Override
@@ -361,7 +393,7 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
                    for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
                        dataSnapshot1.getRef().removeValue();
                    }
-                   mDatabas.removeEventListener(home.value);
+//                   mDatabas.removeEventListener(home.value);
                }
                @Override
                public void onCancelled(DatabaseError databaseError) {
@@ -373,7 +405,11 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
 
     @Override
     public void onClickCall(View view, int adapterPosition, Boolean A) {
-           String id =moviesList.get(adapterPosition).getId();
+           if(MoviesAdapter.filteredList.isEmpty()){
+               ID =moviesList.get(adapterPosition).getId();
+           }else if(!MoviesAdapter.filteredList.isEmpty()){
+               ID =MoviesAdapter.filteredList.get(adapterPosition).getId();
+           }
         if(A){
             Gson i=new Gson();
             SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("SA", MODE_PRIVATE).edit();
@@ -385,7 +421,7 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
             editor.putString("Boolean", jsonFavori);
             editor.commit();
 
-            DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference("Friends").child(id);
+            DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference("Friends").child(ID);
             databaseReference.orderByChild("email").equalTo(userR.getEmail())
                .addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -411,7 +447,7 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
             editor.commit();
 
 
-            DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference("Friends").child(id);
+            DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference("Friends").child(ID);
             databaseReference.orderByChild("email").equalTo(userR.getEmail())
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -557,4 +593,5 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
         }
 
     }
+
 }

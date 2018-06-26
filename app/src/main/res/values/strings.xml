@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GBs Tracking</string>
+    <string name="app_name">Friends Location</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -101,7 +101,7 @@
     <string name="invalidemail">Invalid Email</string>
     <string name="enterpas">Enter Password</string>
     <string name="verfiymail">Verification email sent to</string>
-    <string name="alreadyuser">This Email is Already Exists </string>
+    <string name="alreadyuser">Invalid Email </string>
     <string name="fullinform">FuLL Your Information Fiirst</string>
     <string name="confirm">CONFIRM</string>
     <string name="delete">DELETE</string>
@@ -129,5 +129,8 @@
     <string name="cofe">Cofe</string>
     <string name="Search">Search</string>
     <string name="reduis">Reduis</string>
-
+    <string name="gbsmessage">GPS is not enabled. Do you want to go to settings menu?</string>
+    <string name="info">Gbs Setting</string>
+    <string name="ok">Accept</string>
+    <string name="deletefriend">Do You Want to Delete Your Friend ?</string>
 </resources>
