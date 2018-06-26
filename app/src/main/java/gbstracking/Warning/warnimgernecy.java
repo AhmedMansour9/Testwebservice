@@ -186,14 +186,14 @@ public class warnimgernecy extends Fragment {
                                         };
                                         MyVolley.getInstance(getApplicationContext()).addToRequestQueue(stringRequest);
                                     }
+                                    Dialog dialog=new Dialog(getContext());
+                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                    dialog.setContentView(R.layout.dialogalert);
+                                    dialog.show();
 
                                 }
 
                             });
-                            Dialog dialog=new Dialog(getContext());
-                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setContentView(R.layout.dialogalert);
-                            dialog.show();
                             btnsendmessage.setEnabled(false);
 
                         }
