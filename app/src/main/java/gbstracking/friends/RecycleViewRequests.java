@@ -95,7 +95,15 @@ public class RecycleViewRequests extends RecyclerView.Adapter<RecycleViewRequest
     public int getItemCount() {
         return movie.size();
     }
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
 
 
 }

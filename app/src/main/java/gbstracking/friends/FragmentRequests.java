@@ -58,16 +58,14 @@ public class FragmentRequests extends Fragment implements btnclickRequests, Swip
         v = inflater.inflate(R.layout.requests, container, false);
         mAuth=FirebaseAuth.getInstance();
         user=mAuth.getCurrentUser();
-         mDatabaseRef = FirebaseDatabase.getInstance().getReference("FriendsRequests");
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("FriendsRequests");
         data = FirebaseDatabase.getInstance().getReference("Users");
 
         auth=FirebaseAuth.getInstance();
-         user=auth.getCurrentUser();
-         IDd=user.getUid();
-        UserEmail a;
+        user=auth.getCurrentUser();
+        IDd=user.getUid();
         moviesList=new ArrayList<>();
         recyclerView = v.findViewById(R.id.recycler_friendRequest);
-        recyclerView.setHasFixedSize(true);
         recyclerView.setHasFixedSize(true);
         mAdapter = new RecycleViewRequests(moviesList);
         mAdapter.setClickButton(FragmentRequests.this);
@@ -91,29 +89,29 @@ public class FragmentRequests extends Fragment implements btnclickRequests, Swip
                 SendatatoAdapter();
             }
         });
-    return v;
+        return v;
     }
 
     @Override
     public void onClickCallback(View view, final int adapterPosition) {
-       String email=moviesList.get(adapterPosition).getEmail();
-         mDatabaseRef.child(IDd).orderByChild("email").equalTo(email)
-          .addListenerForSingleValueEvent(new ValueEventListener() {
-          @Override
-          public void onDataChange(DataSnapshot dataSnapshot) {
-              for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                  moviesList.remove(adapterPosition);
-                  dataSnapshot1.getRef().removeValue();
-                  mAdapter.notifyDataSetChanged();
-              }
+        String email=moviesList.get(adapterPosition).getEmail();
+        mDatabaseRef.child(IDd).orderByChild("email").equalTo(email)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                            moviesList.remove(adapterPosition);
+                            dataSnapshot1.getRef().removeValue();
+                            mAdapter.notifyDataSetChanged();
+                        }
 
-          }
+                    }
 
-          @Override
-          public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-          }
-      });
+                    }
+                });
         Sendhisemailtome(email);
         Sendmyemailtohim(email);
     }
@@ -179,7 +177,7 @@ public class FragmentRequests extends Fragment implements btnclickRequests, Swip
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                     userr=dataSnapshot1.getValue(UserEmail.class);
+                    userr=dataSnapshot1.getValue(UserEmail.class);
                 }
                 auth=FirebaseAuth.getInstance();
                 user=auth.getCurrentUser();
@@ -200,24 +198,24 @@ public class FragmentRequests extends Fragment implements btnclickRequests, Swip
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                     a=dataSnapshot1.getValue(UserEmail.class);
-                 data.orderByChild("email").equalTo(EMail).addListenerForSingleValueEvent(new ValueEventListener() {
-                     @Override
-                     public void onDataChange(DataSnapshot dataSnapshot) {
-                         for(DataSnapshot dataSnapshot11:dataSnapshot.getChildren()){
-                              id=dataSnapshot11.child("id").getValue().toString();
-                         }
-                         currnetuser = FirebaseDatabase.getInstance().getReference("Friends").child(id);
-                         DatabaseReference dataa = currnetuser.push();
-                         a.setPrivacy(true);
-                         dataa.setValue(a);
+                    a=dataSnapshot1.getValue(UserEmail.class);
+                    data.orderByChild("email").equalTo(EMail).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for(DataSnapshot dataSnapshot11:dataSnapshot.getChildren()){
+                                id=dataSnapshot11.child("id").getValue().toString();
+                            }
+                            currnetuser = FirebaseDatabase.getInstance().getReference("Friends").child(id);
+                            DatabaseReference dataa = currnetuser.push();
+                            a.setPrivacy(true);
+                            dataa.setValue(a);
 
-                     }
+                        }
 
-                     @Override
-                     public void onCancelled(DatabaseError databaseError) {
-                     }
-                 });
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
                 }
             }
 

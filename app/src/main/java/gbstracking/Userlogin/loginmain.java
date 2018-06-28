@@ -413,6 +413,7 @@ public class loginmain extends AppCompatActivity {
                       loguser.setError(getResources().getString(R.string.invalidemail));
                   }
                   else{
+                      progressBar.setVisibility(View.VISIBLE);
                       firstName = loguser.getText().toString();
                       passwooord = logpass.getText().toString();
                       mAuth.signInWithEmailAndPassword(firstName, passwooord).addOnCompleteListener(loginmain.this, new OnCompleteListener<AuthResult>() {
@@ -425,7 +426,7 @@ public class loginmain extends AppCompatActivity {
                                   mAuth = FirebaseAuth.getInstance();
                                   user = mAuth.getCurrentUser();
                                   boolean emailVerified = user.isEmailVerified();
-                                  if (emailVerified) {
+//                                  if (emailVerified) {
                                       if (check.isChecked()) {
                                           loginPrefsEditor.putBoolean("saveLogin", true);
                                           loginPrefsEditor.putString("username", firstName);
@@ -470,9 +471,9 @@ public class loginmain extends AppCompatActivity {
 
 
 
-                                  }else {
-                                      Toast.makeText(getApplicationContext(),"Verified Your Account",Toast.LENGTH_LONG).show();
-                                  }
+//                                  }else {
+//                                      Toast.makeText(getApplicationContext(),"Verified Your Account",Toast.LENGTH_LONG).show();
+//                                  }
                               }
                           }
                       });

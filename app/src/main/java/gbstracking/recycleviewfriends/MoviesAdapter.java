@@ -115,7 +115,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         Friendsetandget movie = moviesList.get(position);
 
-        holder.switchClick.setChecked(true);
 
 
         if (movie.getUsername() != null) {
@@ -143,19 +142,19 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
             }
         }
         }
-        final int index = position;
+        
 
        holder.btndelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                btnclick.onClickCallback(view,index);
+                btnclick.onClickCallback(view,holder.getAdapterPosition());
             }
         });
 
        holder.switchClick.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
            @Override
            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-           switche.onClickCall(compoundButton,index,b);
+           switche.onClickCall(compoundButton,holder.getAdapterPosition(),b);
 
            }
        });
@@ -175,7 +174,15 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
     public int getItemCount() {
         return moviesList.size();
     }
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
     }
 
 

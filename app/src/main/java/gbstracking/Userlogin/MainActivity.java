@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
         editpasworrd = findViewById(R.id.pass);
         editusername = findViewById(R.id.name);
         auth = getInstance();
-        progressBar = findViewById(R.id.progressBarlogin);
+        progressBar = findViewById(R.id.progressBarr);
 
         Registration();
         Font();
@@ -127,10 +127,11 @@ public class MainActivity extends Activity {
                                       edit.apply();
 
                                       FirebaseUser user = getInstance().getCurrentUser();
-                                      user.sendEmailVerification();
-                                      Toast.makeText(MainActivity.this,
-                                              getResources().getString(R.string.verfiymail) + user.getEmail(),
-                                              Toast.LENGTH_SHORT).show();
+//                                      user.sendEmailVerification();
+//                                      Toast.makeText(MainActivity.this,
+//                                              getResources().getString(R.string.verfiymail) + user.getEmail(),
+//                                              Toast.LENGTH_SHORT).show();
+
                                       authh.getInstance().signOut();
                                       startActivity(new Intent(MainActivity.this, loginmain.class));
                                       finish();

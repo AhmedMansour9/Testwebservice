@@ -80,6 +80,14 @@ public class RecycleFriendsNamed extends RecyclerView.Adapter<RecycleFriendsName
         return movie.size();
     }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
 
 }

@@ -101,7 +101,7 @@
     <string name="invalidemail">Invalid Email</string>
     <string name="enterpas">Enter Password</string>
     <string name="verfiymail">Verification email sent to</string>
-    <string name="alreadyuser">Invalid Email </string>
+    <string name="alreadyuser">Email Already Used </string>
     <string name="fullinform">FuLL Your Information Fiirst</string>
     <string name="confirm">CONFIRM</string>
     <string name="delete">DELETE</string>
@@ -131,6 +131,6 @@
     <string name="reduis">Reduis</string>
     <string name="gbsmessage">GPS is not enabled. Do you want to go to settings menu?</string>
     <string name="info">Gbs Setting</string>
-    <string name="ok">Accept</string>
+    <string name="ok">Delete</string>
     <string name="deletefriend">Do You Want to Delete Your Friend ?</string>
 </resources>

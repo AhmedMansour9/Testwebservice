@@ -28,6 +28,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -105,7 +106,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -153,9 +156,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     public static LatLngBounds latLngBounds;
     Context context;
     ArrayList<String> listid;
-    private FusedLocationProviderClient mFusedLocationClient;
-    private LocationCallback mLocationCallback;
-
+    String ID;
     com.getbase.floatingactionbutton.FloatingActionButton Share;
      com.getbase.floatingactionbutton.FloatingActionButton btngetlocation;
     IGoogleApi mService;
@@ -180,13 +181,14 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     List<GetandSetFriendOnlineHome> lstfriends = new ArrayList<>();
     RecyclerView recyc;
     View v;
+    String date;
+    DatabaseReference datausers;
     int MY_PERMISSIONS_REQUEST_LOCATION=99;
     GetandSetFriendOnlineHome home;
-    PendingResult<LocationSettingsResult> result;
     final public static int REQUEST_LOCATION_CODE = 99;
     CoordinatorLayout framehome;
     SharedPreferences sharedPreferences;
-    String  KEY;
+
     public home() {
     }
 
@@ -197,7 +199,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                              Bundle savedInstanceState) {
      //   FacebookSdk.sdkInitialize(getApplicationContext());
         v = inflater.inflate(R.layout.fragment_home, container, false);
-
+        datausers = FirebaseDatabase.getInstance().getReference("Users");
         Share=v.findViewById(R.id.share);
         framehome=v.findViewById(R.id.framehome);
         context = this.getContext();
@@ -398,14 +400,23 @@ public class home extends Fragment implements itemClickListener, RoutingListener
             }
         });
 
+        try {
+            Geocoder geocoder = new Geocoder(context);
+            addresses = geocoder.getFromLocation(lat, lon, 1);
+            addres = addresses.get(0).getAddressLine(0);
+            Sendlocationtofirebase(addres);
+        } catch (IOException d) {
+            d.printStackTrace();
+        }
+
+
         Share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 try {
-                    Locale loc = new Locale("en");
-                    Geocoder geocoder = new Geocoder(context, loc);
-                    addresses = geocoder.getFromLocation(lati, longe, 1);
+                    Geocoder geocoder = new Geocoder(context);
+                    addresses = geocoder.getFromLocation(lat, lon, 1);
                     addres = addresses.get(0).getAddressLine(0);
                 } catch (IOException d) {
                     d.printStackTrace();
@@ -451,6 +462,46 @@ public class home extends Fragment implements itemClickListener, RoutingListener
 
 
     }
+    public void Sendlocationtofirebase(final String ADDRES) {
+
+
+        ID = userR.getUid();
+        datausers.child(ID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                bolleaanuser u = dataSnapshot.getValue(bolleaanuser.class);
+                if (u.getOnline().equals(true)) {
+                    final Time now = new Time();
+                    now.setToNow();
+                    date = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+                    data = FirebaseDatabase.getInstance().getReference("Locationstreet").child(ID);
+                    data.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            String key=dataSnapshot.getKey();
+                            HashMap<Object, String> ha = new HashMap<>();
+                            ha.put("day", date);
+                            ha.put("time", now.hour+":"+now.minute);
+                            ha.put("street", ADDRES);
+                            data.setValue(ha);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                } else {
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+
     @Override
     public void onResume() {
         super.onResume();
@@ -525,7 +576,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
 
     public void Chaneeuseronline() {
         IDd = userR.getUid();
-          DatabaseReference data = FirebaseDatabase.getInstance().getReference("Users").child(IDd);
+        DatabaseReference data = FirebaseDatabase.getInstance().getReference("Users").child(IDd);
         data.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -535,18 +586,17 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                             KEY = dataSnapshot1.getKey();
+                          String  KEY = dataSnapshot1.getKey();
                             dates.child(KEY).orderByChild("id").equalTo(IDd).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     for (DataSnapshot dataa : dataSnapshot.getChildren()) {
-                                        if (dataa.exists()) {
                                             String email = dataa.child("email").getValue().toString();
                                             if (email != null) {
                                                 dataa.getRef().child("online").setValue(online.getOnline());
                                                 dataa.getRef().child("online").onDisconnect().setValue(false);
                                             }
-                                        }
+
                                     }
                                 }
 
@@ -642,7 +692,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                     if (ContextCompat.checkSelfPermission(getApplicationContext(),
                             Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
-                    buildGoogleapiclint();
+                        buildGoogleapiclint();
                         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationReques, this);                    }
 
                 } else {
@@ -657,41 +707,41 @@ public class home extends Fragment implements itemClickListener, RoutingListener
         }
     }
 
-public void online(){
-    IDd=userR.getUid();
-    DatabaseReference data = FirebaseDatabase.getInstance().getReference("Users");
-    value=data.addValueEventListener(new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-
-            if (dataSnapshot.hasChild(IDd)) {
-                connectedRef = FirebaseDatabase.getInstance().getReference("Users").child(IDd);
-                connectedRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        connectedRef.child("online").onDisconnect().setValue(false);
-                        connectedRef.child("online").setValue(true);
-                        Chaneeuseronline();
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-                        System.err.println("Listener was cancelled");
-                    }
-                });
+    public void online(){
+        IDd=userR.getUid();
+        DatabaseReference data = FirebaseDatabase.getInstance().getReference("Users");
+        value=data.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+              online=new bolleaanuser();
+                if (dataSnapshot.hasChild(IDd)) {
+                    connectedRef = FirebaseDatabase.getInstance().getReference("Users").child(IDd);
+                    connectedRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            connectedRef.child("online").onDisconnect().setValue(false);
+                            connectedRef.child("online").setValue(true);
+                            Chaneeuseronline();
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError error) {
+                            System.err.println("Listener was cancelled");
+                        }
+                    });
+                }
             }
-        }
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-        }
-    });
-}
-  private void hidekeyboard(){
-      final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-      imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
-  }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+    private void hidekeyboard(){
+        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+    }
 
 
-   public void GetFriendsOnline(final Firebasecallback firebasecallback){
+    public void GetFriendsOnline(final Firebasecallback firebasecallback){
         String Id=userR.getUid();
         data.child(Id).addValueEventListener(new ValueEventListener() {
             @Override
@@ -700,8 +750,8 @@ public void online(){
                 lstfriends.clear();
                 adpter.notifyDataSetChanged();
                 for (DataSnapshot datasnap : dataSnapshot.getChildren()) {
-                        if(datasnap.hasChild("privacy")) {
-                            y = datasnap.getValue(GetAndSethomeFriends.class);
+                    if(datasnap.hasChild("privacy")) {
+                        y = datasnap.getValue(GetAndSethomeFriends.class);
                         Online = y.getOnline();
                         Privacy = y.getPrivacy();
                         if (Online && Privacy) {
@@ -723,7 +773,7 @@ public void online(){
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-   }
+    }
 
     @Override
     public void onRoutingFailure(RouteException e) {
@@ -837,121 +887,119 @@ public void online(){
         recyc.setAdapter(adpter);
     }
 
- public void friendsmaponline (final Firebasecall fire){
-     String Id=userR.getUid();
+    public void friendsmaponline (final Firebasecall fire){
+        String Id=userR.getUid();
 
-     data.child(Id).addValueEventListener(new ValueEventListener() {
-         @Override
-         public void onDataChange(DataSnapshot dataSnapshot) {
-             listid.clear();
-             for (DataSnapshot datasnap : dataSnapshot.getChildren()) {
-                 if(datasnap.hasChild("privacy")) {
-                     y = datasnap.getValue(GetAndSethomeFriends.class);
-                     Online = y.getOnline();
-                     Privacy = y.getPrivacy();
-                     if (Online && Privacy) {
-                         final String Id = y.getId();
-                             final String useer=y.getUsername();
-                             final String photto=y.getPhoto();
-                             datalocation = FirebaseDatabase.getInstance().getReference("Location").child(Id);
-                             datalocation.child("l").addValueEventListener(new ValueEventListener() {
-                                 @Override
-                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                     List<Object> lis = (List<Object>) dataSnapshot.getValue();
-                                     if (lis.get(0) != null) {
-                                         lati = Double.parseDouble(lis.get(0).toString());
-                                     }
-                                     if (lis.get(1) != null) {
-                                         longe = Double.parseDouble(lis.get(1).toString());
-                                     }
-                                     t.setUsername(useer);
-                                     t.setPhoto(photto);
-                                     t.setLat(lati);
-                                     t.setLon(longe);
-                                     t.setId(Id);
-                                     fire.Callba(t);
+        data.child(Id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                listid.clear();
+                for (DataSnapshot datasnap : dataSnapshot.getChildren()) {
+                    if(datasnap.hasChild("privacy")) {
+                        y = datasnap.getValue(GetAndSethomeFriends.class);
+                        Online = y.getOnline();
+                        Privacy = y.getPrivacy();
+                        if (Online && Privacy) {
+                            final String Id = y.getId();
+                            final String useer=y.getUsername();
+                            final String photto=y.getPhoto();
+                            datalocation = FirebaseDatabase.getInstance().getReference("Location").child(Id);
+                            datalocation.child("l").addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    List<Object> lis = (List<Object>) dataSnapshot.getValue();
+                                    if (lis.get(0) != null) {
+                                        lati = Double.parseDouble(lis.get(0).toString());
+                                    }
+                                    if (lis.get(1) != null) {
+                                        longe = Double.parseDouble(lis.get(1).toString());
+                                    }
+                                    t.setUsername(useer);
+                                    t.setPhoto(photto);
+                                    t.setLat(lati);
+                                    t.setLon(longe);
+                                    t.setId(Id);
+                                    fire.Callba(t);
 
-                                 }
-                                 @Override
-                                 public void onCancelled(DatabaseError databaseError) {
-                                 }
-                             });
+                                }
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                }
+                            });
 
-                         }
+                        }
 
-                 }
-             }
+                    }
+                }
 
-         }
-         @Override
-         public void onCancelled(DatabaseError databaseError) {
-         }
-     });
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
 
- }
+    }
     private interface Firebasecall {
         void Callba(Friendsetandget o);
     }
- public void  callback (){
+    public void  callback (){
 
-     friendsmaponline(new Firebasecall() {
-         @Override
-         public void Callba(final Friendsetandget o) {
+        friendsmaponline(new Firebasecall() {
+            @Override
+            public void Callba(final Friendsetandget o) {
 
-             listid.add(o.getId());
-             markerlist.get(o.getId());//get marker from list
+                listid.add(o.getId());
+                markerlist.get(o.getId());//get marker from list
 
-             if(markerlist.containsKey(o.getId())) {
-                 Marker marker = markerlist.get(o.getId());
-                 marker.remove();
-             }
+                if(markerlist.containsKey(o.getId())) {
+                    Marker marker = markerlist.get(o.getId());
+                    marker.remove();
+                }
 
-             LatLng l = new LatLng(o.getLat(), o.getLon());
-             IconGenerator generator = new IconGenerator(context);
-             generator.setBackground(getApplicationContext().getDrawable(R.drawable.mark));
-             Bitmap icon = generator.makeIcon();
+                LatLng l = new LatLng(o.getLat(), o.getLon());
+                IconGenerator generator = new IconGenerator(context);
+                generator.setBackground(getApplicationContext().getDrawable(R.drawable.mark));
+                Bitmap icon = generator.makeIcon();
 
-             MarkerOptions markerOptions = new MarkerOptions();
-             markerOptions.position(l)
-                     .title(o.getUsername())
-                     .icon(BitmapDescriptorFactory.fromBitmap(icon));
-             InfoWindowData info = new InfoWindowData();
-             info.setImage(o.getPhoto());
-             windowinfofriend customInfoWindow = new windowinfofriend(getApplicationContext());
-             googleMap.setInfoWindowAdapter(customInfoWindow);
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(l)
+                        .title(o.getUsername())
+                        .icon(BitmapDescriptorFactory.fromBitmap(icon));
+                InfoWindowData info = new InfoWindowData();
+                info.setImage(o.getPhoto());
+                windowinfofriend customInfoWindow = new windowinfofriend(getApplicationContext());
+                googleMap.setInfoWindowAdapter(customInfoWindow);
 
-             m = googleMap.addMarker(markerOptions);
-             markerlist.put(o.getId(),m);//add marker to list
-             m.setTag(info);
-             m.showInfoWindow();
+                m = googleMap.addMarker(markerOptions);
+                markerlist.put(o.getId(),m);//add marker to list
+                m.setTag(info);
+                m.showInfoWindow();
 
 
 
-             googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                 @Override
-                 public boolean onMarkerClick(Marker marker) {
-                     LatLng l=marker.getPosition();
-                     try {
-                         Locale loc = new Locale("en");
-                         Geocoder geocoder = new Geocoder(getContext(),loc);
-                         addresses = geocoder.getFromLocation(lati, longe, 1);
-                         addres = addresses.get(0).getAddressLine(0);
-                     } catch (IOException d) {
-                         d.printStackTrace();
-                     }
+                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        LatLng l=marker.getPosition();
+                        try {
+                            Locale loc = new Locale("en");
+                            Geocoder geocoder = new Geocoder(getContext(),loc);
+                            addresses = geocoder.getFromLocation(lati, longe, 1);
+                            addres = addresses.get(0).getAddressLine(0);
+                        } catch (IOException d) {
+                            d.printStackTrace();
+                        }
 
-                     Snackbar.make(framehome,addres,2500).show();
+                        Snackbar.make(framehome,addres,2500).show();
 
-                     return false;
+                        return false;
 
-                 }
-             });
-         }
-     });
+                    }
+                });
+            }
+        });
 
- }
     }
-
-
+}
 
 

@@ -99,7 +99,7 @@
     <string name="invalidemail">البريد الالكتروني خطأ </string>
     <string name="enterpas">ادخل الرقم السري </string>
     <string name="verfiymail">تم إرسال رسالة التحقق إلى</string>
-    <string name="alreadyuser">البريد الالكتروني غير صالح </string>
+    <string name="alreadyuser">البريد الالكتروني موجود مسبقا </string>
     <string name="fullinform">أدخل بياناتك اولا </string>
     <string name="confirm">قبول </string>
     <string name="delete">حذف  </string>
