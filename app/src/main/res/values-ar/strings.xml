@@ -94,7 +94,7 @@
     <string name="cancel">الغاء </string>
     <string name="details">المزيد من التفاصيل </string>
     <string name="search">  ابحث </string>
-    <string name="find">ابحث عن اصدقائك</string>
+    <string name="Add">اضافة الاصدقاء</string>
     <string name="namee">أدخل أسمك</string>
     <string name="invalidemail">البريد الالكتروني خطأ </string>
     <string name="enterpas">ادخل الرقم السري </string>
@@ -133,4 +133,10 @@
     <string name="info">التفاصيل </string>
     <string name="ok">موافق </string>
     <string name="deletefriend">هل تريد حذف صديقك ؟</string>
+    <string name="turnof">تم ايقاف تشغيل مشاركة الموقع لديه </string>
+    <string name="askhim">هل تريد ان تطلب منه ان يسمح لك بمشاركة موقعه ؟</string>
+    <string name="Nointernet">الشبكة غير متاحة</string>
+    <string name="useralready">هذا العضو بالفعل صديقك </string>
+    <string name="requestsentAlready">تم ارسال طلب الصداقة مسبقا</string>
+    <string name="requestsent">تم ارسال طلب الصداقة</string>
 </resources>

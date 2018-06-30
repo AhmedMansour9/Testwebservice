@@ -197,8 +197,10 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-     //   FacebookSdk.sdkInitialize(getApplicationContext());
+
         v = inflater.inflate(R.layout.fragment_home, container, false);
+
+
         datausers = FirebaseDatabase.getInstance().getReference("Users");
         Share=v.findViewById(R.id.share);
         framehome=v.findViewById(R.id.framehome);
@@ -211,7 +213,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
         lismarket = new ArrayList<Marker>();
         lsst = new ArrayList<>();
         IDd = userR.getUid();
-        y = new GetAndSethomeFriends();
+//        y = new GetAndSethomeFriends();
         polinlist = new ArrayList<>();
         startmove = v.findViewById(R.id.dirstart);
         datalocation = FirebaseDatabase.getInstance().getReference("Location");
@@ -421,7 +423,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                 } catch (IOException d) {
                     d.printStackTrace();
                 }
-                String uri = "http://maps.google.com/maps?q=" + lati + "," + longe + "&iwloc=A&hl=es";
+                String uri = "http://maps.google.com/maps?q=" + lat + "," + lon + "&iwloc=A&hl=es";
                 Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
                 String ShareSub = "Here is my location";
@@ -649,9 +651,6 @@ public class home extends Fragment implements itemClickListener, RoutingListener
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(stringRequest);
-    }
-    public void startlocation(){
-
     }
 
 
@@ -965,6 +964,8 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                 markerOptions.position(l)
                         .title(o.getUsername())
                         .icon(BitmapDescriptorFactory.fromBitmap(icon));
+
+
                 InfoWindowData info = new InfoWindowData();
                 info.setImage(o.getPhoto());
                 windowinfofriend customInfoWindow = new windowinfofriend(getApplicationContext());

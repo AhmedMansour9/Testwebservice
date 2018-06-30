@@ -96,7 +96,7 @@
     <string name="cancel">Cancel</string>
     <string name="details">More Details</string>
     <string name="search">Search</string>
-    <string name="find">Find your Friends</string>
+    <string name="Add">Add your Friends</string>
     <string name="namee">Enter Your Name </string>
     <string name="invalidemail">Invalid Email</string>
     <string name="enterpas">Enter Password</string>
@@ -133,4 +133,10 @@
     <string name="info">Gbs Setting</string>
     <string name="ok">Delete</string>
     <string name="deletefriend">Do You Want to Delete Your Friend ?</string>
+    <string name="turnof">Turn off Location Share</string>
+    <string name="askhim">"Do You Want To Request him/her To Open location Share ?"</string>
+    <string name="Nointernet">No Internet Available</string>
+    <string name="useralready">User Already Your Friend</string>
+    <string name="requestsentAlready">Request Already Sent</string>
+    <string name="requestsent">Sending Request</string>
 </resources>

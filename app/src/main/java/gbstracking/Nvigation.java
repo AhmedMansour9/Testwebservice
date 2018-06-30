@@ -1,6 +1,7 @@
 package gbstracking;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
@@ -28,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.accountkit.AccountKit;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -85,6 +87,7 @@ public class Nvigation extends AppCompatActivity
     public static ActionBarDrawerToggle toggle;
     SharedPreferences sharedPreferences;
     Boolean warn;
+    CheckgbsAndNetwork checkInfo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,7 +103,7 @@ public class Nvigation extends AppCompatActivity
         IDd=user.getUid();
         setSupportActionBar(toolbar);
 
-
+        checkInfo=new CheckgbsAndNetwork(getApplicationContext());
 
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar , R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -226,65 +229,70 @@ public class Nvigation extends AppCompatActivity
             filePath = data.getData();
             if(filePath != null)
             {
-                final ProgressDialog progressDialog = new ProgressDialog(Nvigation.this);
-                progressDialog.setTitle("Uploading...");
-                progressDialog.show();
+                if (checkInfo.isNetworkAvailable(getApplicationContext())) {
+                    final ProgressDialog progressDialog = new ProgressDialog(Nvigation.this);
+                    progressDialog.setTitle("Uploading...");
+                    progressDialog.show();
 
-                StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
-                ref.putFile(filePath)
-                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                progressDialog.dismiss();
-                                Toast.makeText(getApplicationContext(), "Uploaded", Toast.LENGTH_SHORT).show();
-                                Uri u=taskSnapshot.getDownloadUrl();
+                    StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
+                    ref.putFile(filePath)
+                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(getApplicationContext(), "Uploaded", Toast.LENGTH_SHORT).show();
+                                    Uri u=taskSnapshot.getUploadSessionUri();
 
 
-                                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                        .setPhotoUri(Uri.parse(u.toString()))
-                                        .build();
+                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                            .setPhotoUri(Uri.parse(u.toString()))
+                                            .build();
 
-                                user.updateProfile(profileUpdates)
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    Log.d("", "User profile updated.");
-                                                    DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference("Users").child(IDd);
-                                                    DatabaseReference data=databaseReference.child("photo");
-                                                    data.setValue(user.getPhotoUrl().toString());
-                                                    View headerView = navigationView.getHeaderView(0);
-                                                    texName =  headerView.findViewById(R.id.texkName);
-                                                    i=headerView.findViewById(R.id.imagecom);
-                                                    c=headerView.findViewById(R.id.person_image);
-                                                    Picasso.with(getApplicationContext())
-                                                            .load(user.getPhotoUrl())
-                                                            .into(c);
-                                                    i.setVisibility(View.INVISIBLE);
+                                    user.updateProfile(profileUpdates)
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                        Log.d("", "User profile updated.");
+                                                        DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference("Users").child(IDd);
+                                                        DatabaseReference data=databaseReference.child("photo");
+                                                        data.setValue(user.getPhotoUrl().toString());
+                                                        View headerView = navigationView.getHeaderView(0);
+                                                        texName =  headerView.findViewById(R.id.texkName);
+                                                        i=headerView.findViewById(R.id.imagecom);
+                                                        c=headerView.findViewById(R.id.person_image);
+                                                        Picasso.with(getApplicationContext())
+                                                                .load(user.getPhotoUrl())
+                                                                .into(c);
+                                                        i.setVisibility(View.INVISIBLE);
 
+                                                    }
                                                 }
-                                            }
-                                        });
+                                            });
 
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                progressDialog.dismiss();
-                                Toast.makeText(getApplicationContext(), "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                                double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
-                                        .getTotalByteCount());
-                                progressDialog.setMessage("Uploaded "+(int)progress+"%");
-                            }
-                        });
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(getApplicationContext(), "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                                    double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                                            .getTotalByteCount());
+                                    progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                                }
+                            });
+
+                }else {
+                    snackbarinternet();
+                }
             }
         }
 
@@ -354,13 +362,18 @@ public class Nvigation extends AppCompatActivity
 
             case R.id.logoutt:
                 mCurrentSelectedPosition=5;
-                View headerView = navigationView.getHeaderView(0);
-                texName =headerView.findViewById(R.id.texkName);
-                texName.setText("");
-                authh.getInstance().signOut();
-                AccountKit.logOut();
-                startActivity(new Intent(Nvigation.this,loginmain.class));
-                finish();
+                if (checkInfo.isNetworkAvailable(getApplicationContext())) {
+                    View headerView = navigationView.getHeaderView(0);
+                    texName =headerView.findViewById(R.id.texkName);
+                    texName.setText("");
+                    authh.getInstance().signOut();
+                    AccountKit.logOut();
+                    startActivity(new Intent(Nvigation.this,loginmain.class));
+                    finish();
+
+                }else {
+                    snackbarinternet();
+                }
                 break;
 
             default:
@@ -389,7 +402,10 @@ public class Nvigation extends AppCompatActivity
         mAuth.addAuthStateListener(mAuthListener);
 
     }
+      public void snackbarinternet(){
+          Snackbar.make(drawer,getResources().getString(R.string.Nointernet),1500).show();
 
+      }
     @Override
     public void onStop() {
         super.onStop();

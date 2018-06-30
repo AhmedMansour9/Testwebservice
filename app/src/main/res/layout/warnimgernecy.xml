@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:background="#ffffff"
     android:layout_height="match_parent"
+    android:id="@+id/layoutemergnecy"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.gbstracking.gbstracking.Warning.warnimgernecy">
     <RelativeLayout

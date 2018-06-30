@@ -113,7 +113,7 @@ public class loginmain extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FacebookSdk.sdkInitialize(getApplicationContext());
+//        FacebookSdk.sdkInitialize(getApplicationContext());
         checkInfo=new CheckgbsAndNetwork(loginmain.this);
         setContentView(R.layout.activitylogin);
 

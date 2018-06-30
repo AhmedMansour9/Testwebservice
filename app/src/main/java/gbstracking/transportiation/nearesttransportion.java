@@ -18,6 +18,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -85,6 +87,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import gbstracking.CheckgbsAndNetwork;
 import gbstracking.Nvigation;
 
 import static com.facebook.accountkit.internal.AccountKitController.getApplicationContext;
@@ -132,6 +135,8 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
         int reduis;
         String id;
         double LAT,LON;
+        CheckgbsAndNetwork checkInfo;
+        CoordinatorLayout layoutnearest;
         public nearesttransportion() {
     }
 
@@ -142,10 +147,12 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
         View v=inflater.inflate(R.layout.nearesttransportion, container, false);
         ButterKnife.bind(this,v);
         context=this.getContext();
+        layoutnearest=v.findViewById(R.id.layoutnearest);
        categories = new ArrayList<String>();
         polylines=new ArrayList<>();
          spinner = v.findViewById(R.id.spinner);
         spinnerreduis= v.findViewById(R.id.spinnerreduis);
+        checkInfo=new CheckgbsAndNetwork(FacebookSdk.getApplicationContext());
          listreduis=new ArrayList<>();
         checkLocationPermission();
         sheetBehavior = BottomSheetBehavior.from(sheet);
@@ -282,6 +289,10 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
 
         return v;
     }
+        public void snackbarinternet(){
+            Snackbar.make(layoutnearest,getResources().getString(R.string.Nointernet),1500).show();
+
+        }
         public boolean checkLocationPermission() {
             if (ContextCompat.checkSelfPermission(getActivity(),
                     Manifest.permission.ACCESS_FINE_LOCATION)
@@ -331,6 +342,7 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
                 }
             });
     }
+
     public void btntrain(){
         train.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -351,10 +363,12 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
                 if(chechfriend&&user!=null){
                     LatLng laty=new LatLng(LAT,LON);
                     marker2 = googleMap.addMarker(new MarkerOptions().position(laty).title(user).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
+                   Camerapoistion(LAT,LON);
                     marker2.showInfoWindow();
                 }
                 String school ="subway_station";
                 String urle = getUrl(la,lo, school,reduis);
+                Camerapoistion(la,lo);
                 dataTransfer[0] = googleMap;
                 dataTransfer[1] = urle;
 
@@ -367,28 +381,34 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
         btndoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                if(chechfriend&&user!=null){
-                    la = LAT;
-                    lo = LON;
-                }else {
-                    la=latitude;
-                    lo=longitude;
-                }
-                Object dataTransfer[] = new Object[2];
-                getNearbyPlacesData = new GetNearbyPlacesData();
-                googleMap.clear();
-                if(chechfriend&&user!=null){
-                    LatLng laty=new LatLng(LAT,LON);
-                    marker2 = googleMap.addMarker(new MarkerOptions().position(laty).title(user).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
-                    marker2.showInfoWindow();
-                }
-                String doctor ="doctor";
-                String urle = getUrl(la,lo, doctor,reduis);
-                dataTransfer[0] = googleMap;
-                dataTransfer[1] = urle;
+                if(checkInfo.isNetworkAvailable(getApplicationContext())) {
+                    sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    if (chechfriend && user != null) {
+                        la = LAT;
+                        lo = LON;
+                    } else {
+                        la = latitude;
+                        lo = longitude;
+                    }
+                    Object dataTransfer[] = new Object[2];
+                    getNearbyPlacesData = new GetNearbyPlacesData();
+                    googleMap.clear();
+                    if (chechfriend && user != null) {
+                        Camerapoistion(LAT,LON);
+                        LatLng laty = new LatLng(LAT, LON);
+                        marker2 = googleMap.addMarker(new MarkerOptions().position(laty).title(user).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
+                        marker2.showInfoWindow();
+                    }
+                    String doctor = "doctor";
+                    String urle = getUrl(la, lo, doctor, reduis);
+                    Camerapoistion(la,lo);
+                    dataTransfer[0] = googleMap;
+                    dataTransfer[1] = urle;
 
-                getNearbyPlacesData.execute(dataTransfer);
+                    getNearbyPlacesData.execute(dataTransfer);
+                }else {
+                    snackbarinternet();
+                }
 
             }
         });
@@ -397,27 +417,33 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
        hospital.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
-               sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-               if(chechfriend&&user!=null){
-                   la = LAT;
-                   lo = LON;
+               if(checkInfo.isNetworkAvailable(getApplicationContext())) {
+                   sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                   if (chechfriend && user != null) {
+                       la = LAT;
+                       lo = LON;
+                   } else {
+                       la = latitude;
+                       lo = longitude;
+                   }
+                   Object dataTransfer[] = new Object[2];
+                   getNearbyPlacesData = new GetNearbyPlacesData();
+                   googleMap.clear();
+                   if (chechfriend && user != null) {
+                       LatLng laty = new LatLng(LAT, LON);
+                       Camerapoistion(LAT,LON);
+                       marker2 = googleMap.addMarker(new MarkerOptions().position(laty).title(user).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
+                       marker2.showInfoWindow();
+                   }
+                   String hospital = "hospital";
+                   String url = getUrl(la, lo, hospital, reduis);
+                   Camerapoistion(la,lo);
+                   dataTransfer[0] = googleMap;
+                   dataTransfer[1] = url;
+                   getNearbyPlacesData.execute(dataTransfer);
                }else {
-                   la=latitude;
-                   lo=longitude;
+                   snackbarinternet();
                }
-               Object dataTransfer[] = new Object[2];
-               getNearbyPlacesData = new GetNearbyPlacesData();
-               googleMap.clear();
-               if(chechfriend&&user!=null){
-                   LatLng laty=new LatLng(LAT,LON);
-                   marker2 = googleMap.addMarker(new MarkerOptions().position(laty).title(user).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
-                   marker2.showInfoWindow();
-               }
-               String hospital = "hospital";
-               String url = getUrl(la,lo,hospital,reduis);
-               dataTransfer[0] = googleMap;
-               dataTransfer[1] = url;
-               getNearbyPlacesData.execute(dataTransfer);
            }
        });
    }
@@ -425,27 +451,33 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
        pharmcy.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
-               sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-               if(chechfriend&&user!=null){
-                   la = LAT;
-                   lo = LON;
-               }else {
-                   la=latitude;
-                   lo=longitude;
+               if(checkInfo.isNetworkAvailable(getApplicationContext())) {
+                   sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                   if (chechfriend && user != null) {
+                       la = LAT;
+                       lo = LON;
+                   } else {
+                       la = latitude;
+                       lo = longitude;
+                   }
+                   Object dataTransfer[] = new Object[2];
+                   getNearbyPlacesData = new GetNearbyPlacesData();
+                   googleMap.clear();
+                   if (chechfriend && user != null) {
+                       LatLng laty = new LatLng(LAT, LON);
+                       Camerapoistion(LAT,LON);
+                       marker2 = googleMap.addMarker(new MarkerOptions().position(laty).title(user).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
+                       marker2.showInfoWindow();
+                   }
+                   String hospital = "pharmcy";
+                   String url = getUrl(la, lo, hospital, reduis);
+                   Camerapoistion(la,lo);
+                   dataTransfer[0] = googleMap;
+                   dataTransfer[1] = url;
+                   getNearbyPlacesData.execute(dataTransfer);
+               }else{
+                   snackbarinternet();
                }
-               Object dataTransfer[] = new Object[2];
-               getNearbyPlacesData = new GetNearbyPlacesData();
-               googleMap.clear();
-               if(chechfriend&&user!=null){
-                   LatLng laty=new LatLng(LAT,LON);
-                   marker2 = googleMap.addMarker(new MarkerOptions().position(laty).title(user).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
-                   marker2.showInfoWindow();
-               }
-               String hospital = "pharmcy";
-               String url = getUrl(la,lo, hospital,reduis);
-               dataTransfer[0] = googleMap;
-               dataTransfer[1] = url;
-               getNearbyPlacesData.execute(dataTransfer);
            }
        });
    }
@@ -453,27 +485,33 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
        police.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
-               sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-               if(chechfriend&&user!=null){
-                   la = LAT;
-                   lo = LON;
+               if(checkInfo.isNetworkAvailable(getApplicationContext())) {
+                   sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                   if (chechfriend && user != null) {
+                       la = LAT;
+                       lo = LON;
+                   } else {
+                       la = latitude;
+                       lo = longitude;
+                   }
+                   Object dataTransfer[] = new Object[2];
+                   getNearbyPlacesData = new GetNearbyPlacesData();
+                   googleMap.clear();
+                   if (chechfriend && user != null) {
+                       LatLng laty = new LatLng(LAT, LON);
+                       Camerapoistion(LAT,LON);
+                       marker2 = googleMap.addMarker(new MarkerOptions().position(laty).title(user).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
+                       marker2.showInfoWindow();
+                   }
+                   String hospital = "police";
+                   String url = getUrl(la, lo, hospital, reduis);
+                   Camerapoistion(la,lo);
+                   dataTransfer[0] = googleMap;
+                   dataTransfer[1] = url;
+                   getNearbyPlacesData.execute(dataTransfer);
                }else {
-                   la=latitude;
-                   lo=longitude;
+                   snackbarinternet();
                }
-               Object dataTransfer[] = new Object[2];
-               getNearbyPlacesData = new GetNearbyPlacesData();
-               googleMap.clear();
-               if(chechfriend&&user!=null){
-                   LatLng laty=new LatLng(LAT,LON);
-                   marker2 = googleMap.addMarker(new MarkerOptions().position(laty).title(user).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
-                   marker2.showInfoWindow();
-               }
-               String hospital = "police";
-               String url = getUrl(la,lo, hospital,reduis);
-               dataTransfer[0] = googleMap;
-               dataTransfer[1] = url;
-               getNearbyPlacesData.execute(dataTransfer);
            }
        });
 
@@ -482,27 +520,33 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
        cofe.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
-               sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-               if(chechfriend&&user!=null){
-                   la = LAT;
-                   lo = LON;
+               if(checkInfo.isNetworkAvailable(getApplicationContext())) {
+                   sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                   if (chechfriend && user != null) {
+                       la = LAT;
+                       lo = LON;
+                   } else {
+                       la = latitude;
+                       lo = longitude;
+                   }
+                   Object dataTransfer[] = new Object[2];
+                   getNearbyPlacesData = new GetNearbyPlacesData();
+                   googleMap.clear();
+                   if (chechfriend && user != null) {
+                       LatLng laty = new LatLng(LAT, LON);
+                       Camerapoistion(LAT,LON);
+                       marker2 = googleMap.addMarker(new MarkerOptions().position(laty).title(user).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
+                       marker2.showInfoWindow();
+                   }
+                   String hospital = "cafe";
+                   String url = getUrl(la, lo, hospital, reduis);
+                   Camerapoistion(la,lo);
+                   dataTransfer[0] = googleMap;
+                   dataTransfer[1] = url;
+                   getNearbyPlacesData.execute(dataTransfer);
                }else {
-                   la=latitude;
-                   lo=longitude;
+                   snackbarinternet();
                }
-               Object dataTransfer[] = new Object[2];
-               getNearbyPlacesData = new GetNearbyPlacesData();
-               googleMap.clear();
-               if(chechfriend&&user!=null){
-                   LatLng laty=new LatLng(LAT,LON);
-                   marker2 = googleMap.addMarker(new MarkerOptions().position(laty).title(user).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
-                   marker2.showInfoWindow();
-               }
-               String hospital = "cafe";
-               String url = getUrl(la,lo, hospital,reduis);
-               dataTransfer[0] = googleMap;
-               dataTransfer[1] = url;
-               getNearbyPlacesData.execute(dataTransfer);
            }
        });
    }
@@ -827,7 +871,7 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
 
             CameraPosition currentPlace = new CameraPosition.Builder()
                     .target(new LatLng(latiI,longeE))
-                    .bearing(240).tilt(45).zoom(15f).build();
+                    .bearing(240).tilt(45).zoom(13f).build();
             googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(currentPlace));
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(currentPlace));
         }

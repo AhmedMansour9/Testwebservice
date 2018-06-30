@@ -635,18 +635,15 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
     public void AllowUser() {
         Scrollfrie.setVisibility(View.INVISIBLE);
         android.support.v7.app.AlertDialog.Builder alertDialog = new android.support.v7.app.AlertDialog.Builder(ActivityFriend.this);
-        // Setting Dialog Title
-        alertDialog.setTitle("Sorry");
-        // Setting Dialog Message
-        alertDialog.setMessage(username + "  Turn off locatiohn social"+"\n"+"Do You Want To Request him/her To Open social location ?");
+        alertDialog.setMessage(username+" "+getResources().getString(R.string.turnof)+"\n"+getResources().getString(R.string.askhim));
         // On pressing Settings button
-        alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, int which) {
                dialog.cancel();
                 Sendlocationshare();
             }
         });
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        alertDialog.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
             }

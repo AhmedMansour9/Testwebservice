@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,6 +20,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -45,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import gbstracking.CheckgbsAndNetwork;
 import gbstracking.MyVolley;
 import gbstracking.Nvigation;
 import gbstracking.friends.ActivityFriend;
@@ -65,7 +68,8 @@ public class warnimgernecy extends Fragment {
     Button btnsendmessage;
     FirebaseAuth mAuth;
     FirebaseUser user;
-    ProgressDialog progressDialog;
+    CheckgbsAndNetwork checkInfo;
+    FrameLayout frame;
     public warnimgernecy() {
         // Required empty public constructor
     }
@@ -77,7 +81,8 @@ public class warnimgernecy extends Fragment {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.warnimgernecy, container, false);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
+        checkInfo=new CheckgbsAndNetwork(getApplicationContext());
+        frame=v.findViewById(R.id.layoutemergnecy);
         pin=v.findViewById(R.id.pin);
         truee=v.findViewById(R.id.truee);
         falsee=v.findViewById(R.id.falsee);
@@ -133,6 +138,10 @@ public class warnimgernecy extends Fragment {
             return false;
         }
     }
+    public void snackbarinternet(){
+        Snackbar.make(frame,getResources().getString(R.string.Nointernet),1500).show();
+
+    }
     public void editpin() {
         pin.addTextChangedListener(new TextWatcher() {
             @Override
@@ -150,52 +159,56 @@ public class warnimgernecy extends Fragment {
                     btnsendmessage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            getAddresslocation(new firebasecallback() {
-                                @Override
-                                public void Callback(final String day, final String street,final String time) {
+                            if (checkInfo.isNetworkAvailable(getApplicationContext())) {
+                                getAddresslocation(new firebasecallback() {
+                                    @Override
+                                    public void Callback(final String day, final String street, final String time) {
 
 
-                                    for(int i=0;i<listname.size();i++){
-                                        final int finalI = i;
-                                        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://zamaleksongs.000webhostapp.com/pushem.php",
-                                                new Response.Listener<String>() {
-                                                    @Override
-                                                    public void onResponse(String response) {
+                                        for (int i = 0; i < listname.size(); i++) {
+                                            final int finalI = i;
+                                            StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://zamaleksongs.000webhostapp.com/pushem.php",
+                                                    new Response.Listener<String>() {
+                                                        @Override
+                                                        public void onResponse(String response) {
+                                                        }
+                                                    },
+                                                    new Response.ErrorListener() {
+                                                        @Override
+                                                        public void onErrorResponse(VolleyError error) {
+                                                        }
+                                                    }) {
+                                                @Override
+                                                protected Map<String, String> getParams() throws AuthFailureError {
+                                                    Map<String, String> params = new HashMap<>();
+                                                    if (user.getDisplayName() != null) {
+                                                        params.put("title", user.getDisplayName());
+                                                    } else {
+                                                        params.put("title", user.getEmail());
                                                     }
-                                                },
-                                                new Response.ErrorListener() {
-                                                    @Override
-                                                    public void onErrorResponse(VolleyError error) {
-                                                    }
-                                                }) {
-                                            @Override
-                                            protected Map<String, String> getParams() throws AuthFailureError {
-                                                Map<String, String> params = new HashMap<>();
-                                                if (user.getDisplayName() != null) {
-                                                    params.put("title", user.getDisplayName());
-                                                } else {
-                                                    params.put("title", user.getEmail());
+                                                    params.put("message", getResources().getString(R.string.mesge));
+                                                    params.put("address", street);
+                                                    params.put("time", time);
+                                                    params.put("Day", day);
+                                                    params.put("email", listname.get(finalI));
+                                                    return params;
                                                 }
-                                                params.put("message",getResources().getString(R.string.mesge));
-                                                params.put("address",street);
-                                                params.put("time",time);
-                                                params.put("Day",day);
-                                                params.put("email",listname.get(finalI));
-                                                return params;
-                                            }
-                                        };
-                                        MyVolley.getInstance(getApplicationContext()).addToRequestQueue(stringRequest);
+                                            };
+                                            MyVolley.getInstance(getApplicationContext()).addToRequestQueue(stringRequest);
+                                        }
+                                        Dialog dialog = new Dialog(getContext());
+                                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                        dialog.setContentView(R.layout.dialogalert);
+                                        dialog.show();
+
                                     }
-                                    Dialog dialog=new Dialog(getContext());
-                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                                    dialog.setContentView(R.layout.dialogalert);
-                                    dialog.show();
 
-                                }
+                                });
+                                btnsendmessage.setEnabled(false);
 
-                            });
-                            btnsendmessage.setEnabled(false);
-
+                            } else{
+                                snackbarinternet();
+                            }
                         }
                     });
                 }else {

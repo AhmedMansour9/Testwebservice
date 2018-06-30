@@ -93,7 +93,6 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
     String ID;
     public String key;
     StorageReference s;
-    private static int Glarlly = 1;
     ImageView btnBottomSheet;
     BottomSheetBehavior sheetBehavior;
     private RecyclerView recyclerView;
@@ -102,24 +101,22 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
     FirebaseAuth mAuth;
     public static String EMail;
     String IDd;
-    EditText friend;
     public ArrayList<Friendsetandget> moviesList;
     Friendsetandget l;
     String userr;
     FirebaseUser userR;
     DatabaseReference mDatabas;
     DatabaseReference mDatabasE;
-    LocationManager locationManager;
     String USerid;
     UserID userid;
     DatabaseReference data;
     ProgressDialog progressDialog;
-
+    ArrayList<Integer> myArrayList=new ArrayList<Integer>();
+    ArrayList<Boolean> myArrayListboolean=new ArrayList<Boolean>();
+    CheckgbsAndNetwork checkInfo;
     CoordinatorLayout cor;
     public static ArrayList<Integer> listPositions;
     public static ArrayList<Boolean> listBoolean;
-    ArrayList<Integer> myArrayList=new ArrayList<Integer>();
-    ArrayList<Boolean> myArrayListboolean=new ArrayList<Boolean>();
     DatabaseReference databaseReference;
     DatabaseReference mDatabaseRef;
     @Override
@@ -133,7 +130,7 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
          moviesList = new ArrayList<>();
          mDatabaseRef = FirebaseDatabase.getInstance().getReference("Friends");
         editemai = v.findViewById(R.id.editfriend);
-
+        checkInfo=new CheckgbsAndNetwork(getApplicationContext());
 
         cor=v.findViewById(R.id.cor);
         EMail = editemai.getText().toString().trim();
@@ -144,11 +141,11 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
         IDd = userR.getUid();
         userr = userR.getEmail();
         btnBottomSheet = v.findViewById(R.id.add);
-        friend = v.findViewById(R.id.findyourfriend);
+//        friend = v.findViewById(R.id.findyourfriend);
         progressDialog = new ProgressDialog(getApplicationContext());
         SavedSahredPrefrenceSwitch();
         Recyclview();
-        RecycleviewSerach();
+//        RecycleviewSerach();
         SwipRefresh();
 
 
@@ -186,49 +183,70 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
 
     public void SendatatoAdapter() {
 
-        moviesList.clear();
-        mAdapter.notifyDataSetChanged();
-        mSwipeRefreshLayout.setRefreshing(true);
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("Friends");
-       mDatabaseRef.child(IDd).addChildEventListener(new ChildEventListener() {
-           @Override
-           public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-               Friendsetandget friendsetandget=dataSnapshot.getValue(Friendsetandget.class);
+       if(checkInfo.isNetworkAvailable(getApplicationContext())) {
+           moviesList.clear();
+           mAdapter.notifyDataSetChanged();
+           mSwipeRefreshLayout.setRefreshing(true);
+           mDatabaseRef = FirebaseDatabase.getInstance().getReference("Friends");
+           mListener= mDatabaseRef.addValueEventListener(new ValueEventListener() {
+               @Override
+               public void onDataChange(DataSnapshot dataSnapshot) {
+                   if (dataSnapshot.hasChild(IDd)) {
+                       mDatabaseRef.child(IDd).addChildEventListener(new ChildEventListener() {
+                           @Override
+                           public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                               Friendsetandget friendsetandget = dataSnapshot.getValue(Friendsetandget.class);
 
-               if(friendsetandget!=null &&!hasId(friendsetandget.getEmail())) {
-                   moviesList.add(0, friendsetandget);
-                   mAdapter.notifyDataSetChanged();
-                   mSwipeRefreshLayout.setRefreshing(false);
+                               if (friendsetandget != null && !hasId(friendsetandget.getEmail())) {
+                                   moviesList.add(0, friendsetandget);
+                                   mAdapter.notifyDataSetChanged();
+                                   mSwipeRefreshLayout.setRefreshing(false);
+                               }
+
+                           }
+
+                           @Override
+                           public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                           }
+
+                           @Override
+                           public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                           }
+
+                           @Override
+                           public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                           }
+
+                           @Override
+                           public void onCancelled(DatabaseError databaseError) {
+
+                           }
+                       });
+                   } else {
+                       if (mSwipeRefreshLayout.isRefreshing()) {
+                           mSwipeRefreshLayout.setEnabled(false);
+                       }
+                   }
                }
-           }
 
-           @Override
-           public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+               @Override
+               public void onCancelled(DatabaseError databaseError) {
 
-           }
-
-           @Override
-           public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-           }
-
-           @Override
-           public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-           }
-
-           @Override
-           public void onCancelled(DatabaseError databaseError) {
-
-           }
-       });
+               }
+           });
+       }else{
+           snackbarinternet();
+       }
 
     }
     @Override
     public void onClick(View view, int position) {
 
 //        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            if(MoviesAdapter.filteredList.isEmpty()){
+//            if(MoviesAdapter.filteredList.isEmpty()){
                 l = moviesList.get(position);
                 Intent i = new Intent(getApplicationContext(), ActivityFriend.class);
                 i.putExtra("Email2", l.GetEmail());
@@ -236,16 +254,16 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
                 i.putExtra("id", l.getId());
                 i.putExtra("username",l.getUsername());
                 startActivity(i);
-            }else if(!MoviesAdapter.filteredList.isEmpty()){
-                l = MoviesAdapter.filteredList.get(position);
-                Intent i = new Intent(getApplicationContext(), ActivityFriend.class);
-                i.putExtra("Email2", l.GetEmail());
-                i.putExtra("Photo2", l.getPhoto());
-                i.putExtra("id", l.getId());
-                i.putExtra("username",l.getUsername());
-                startActivity(i);
-
-            }
+//            }else if(!MoviesAdapter.filteredList.isEmpty()){
+//                l = MoviesAdapter.filteredList.get(position);
+//                Intent i = new Intent(getApplicationContext(), ActivityFriend.class);
+//                i.putExtra("Email2", l.GetEmail());
+//                i.putExtra("Photo2", l.getPhoto());
+//                i.putExtra("id", l.getId());
+//                i.putExtra("username",l.getUsername());
+//                startActivity(i);
+//
+//            }
 //        }else{
 //            CheckgbsAndNetwork chec=new CheckgbsAndNetwork(getActivity());
 //            chec.showSettingsAlert();
@@ -259,18 +277,17 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
         builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(MoviesAdapter.filteredList.isEmpty()) {
-                     id = moviesList.get(position).getId();
-                     email = moviesList.get(position).getEmail();
-                }else if(!MoviesAdapter.filteredList.isEmpty()){
-                     id = MoviesAdapter.filteredList.get(position).getId();
-                     email = MoviesAdapter.filteredList.get(position).getEmail();
+                if(checkInfo.isNetworkAvailable(getApplicationContext())) {
+                    id = moviesList.get(position).getId();
+                    email = moviesList.get(position).getEmail();
+
+                    Deleteuser(email, position);
+                    Deleteuser2(id);
+                    dialog.cancel();
+                }else {
+                    snackbarinternet();
 
                 }
-
-                Deleteuser(email,position);
-                Deleteuser2(id);
-                dialog.cancel();
             }
         });
         builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
@@ -283,7 +300,10 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
 
 
     }
+    public void snackbarinternet(){
+        Snackbar.make(cor,getResources().getString(R.string.Nointernet),1500).show();
 
+    }
     @Override
     public void onRefresh() {
         SendatatoAdapter();
@@ -308,19 +328,19 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
             @Override
            public void onDataChange(DataSnapshot dataSnapshot) {
            if(dataSnapshot.exists()){
-           Toast.makeText(getApplicationContext(), "User Already your Friend", Toast.LENGTH_SHORT).show();
+           Toast.makeText(getApplicationContext(), getResources().getString(R.string.useralready), Toast.LENGTH_SHORT).show();
                }
             else{
           data.child(USerid).orderByChild("email").equalTo(userR.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
            @Override
            public void onDataChange(DataSnapshot dataSnapshot) {
                    if(dataSnapshot.exists()){
-          Toast.makeText(getApplicationContext(), "Request Already Sent", Toast.LENGTH_SHORT).show();
+          Toast.makeText(getApplicationContext(), getResources().getString(R.string.requestsentAlready) , Toast.LENGTH_SHORT).show();
           }
                     else if(!dataSnapshot.exists()){
             data.child(userid.getId()).push().child("email").setValue(userR.getEmail());
                        editemai.setText("");
-                       Toast.makeText(getApplicationContext(), "Sending Request", Toast.LENGTH_SHORT).show();}}
+                       Toast.makeText(getApplicationContext(), getResources().getString(R.string.requestsent), Toast.LENGTH_SHORT).show();}}
                 @Override
                   public void onCancelled(DatabaseError databaseError) {}});}}
                  @Override
@@ -328,7 +348,7 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
                             }
                         });
                     } else {
-                        Toast.makeText(getApplicationContext(), "Invalid Email", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.invalidemail), Toast.LENGTH_SHORT).show();
                         editemai.setText("");
                     }
                 }
@@ -351,8 +371,8 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
                      moviesList.remove(position);
                      child.getRef().removeValue();
                      mAdapter.notifyDataSetChanged();
-//                     mDatabasE.child(IDd)
-//                             .orderByChild("email").removeEventListener(mListener);
+                     mDatabasE.child(IDd)
+                             .orderByChild("email").removeEventListener(mListener);
 //                     mDatabas.removeEventListener(home.value);
                  }
              }
@@ -397,20 +417,20 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
         recyclerView.setAdapter(mAdapter);
 
     }
-    public void RecycleviewSerach(){
-        friend.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                mAdapter.getFilter().filter(charSequence);
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
-    }
+//    public void RecycleviewSerach(){
+//        friend.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//            }
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//                mAdapter.getFilter().filter(charSequence);
+//            }
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//            }
+//        });
+//    }
     public void SwipRefresh(){
         mSwipeRefreshLayout =  v.findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -437,7 +457,11 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
-                AddFriend();
+                if(checkInfo.isNetworkAvailable(getApplicationContext())) {
+                    AddFriend();
+                }else {
+                    snackbarinternet();
+                }
             }
         });
     }
@@ -510,13 +534,7 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
 
     @Override
     public void onClickCall(View view, int adapterPosition, Boolean A) {
-        if(MoviesAdapter.filteredList.isEmpty()){
             ID =moviesList.get(adapterPosition).getId();
-        }else {
-            ID =MoviesAdapter.filteredList.get(adapterPosition).getId();
-        }
-
-
         if(A){
             Gson i=new Gson();
             SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("SA", MODE_PRIVATE).edit();
