@@ -39,18 +39,7 @@
                 android:layout_marginLeft="@dimen/_5sdp"
                 />
 
-        <Switch
-            android:id="@+id/simpleSwitch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:textOn="On"
-            android:layout_marginRight="@dimen/_5sdp"
-            android:textOff="Off"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:textColor="#f00"
-             android:layout_toLeftOf="@id/imagedelete"
-             android:textSize="25sp"/>
+
 
 
         <TextView

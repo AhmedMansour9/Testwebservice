@@ -37,6 +37,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -72,6 +75,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import gbstracking.CheckgbsAndNetwork;
 import gbstracking.Userlogin.MainActivity;
+import gbstracking.contact.RecycleviewContact;
 import gbstracking.friends.ActivityFriend;
 import gbstracking.mainactivity.home;
 
@@ -80,7 +84,7 @@ import static android.content.Context.LOCATION_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
-public class FragmentFriends extends Fragment implements switchinterface,ItemClickListener,btnclickinterface,SwipeRefreshLayout.OnRefreshListener{
+public class FragmentFriends extends Fragment implements ItemClickListener,btnclickinterface,SwipeRefreshLayout.OnRefreshListener{
 
     public FragmentFriends() {
         // Required empty public constructor
@@ -119,19 +123,23 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
     public static ArrayList<Boolean> listBoolean;
     DatabaseReference databaseReference;
     DatabaseReference mDatabaseRef;
+    ChildEventListener child;
+    public static Boolean check;
+    Context context;
+    private RecyclerViewReadyCallback recyclerViewReadyCallback;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_listfriends, container, false);
-//        Firebase.setAndroidContext(getActivity());
         data = FirebaseDatabase.getInstance().getReference("FriendsRequests");
         mDatabasE = FirebaseDatabase.getInstance().getReference("Friends");
         mDatabas = FirebaseDatabase.getInstance().getReference("Users");
+        context=this.getContext();
          moviesList = new ArrayList<>();
-         mDatabaseRef = FirebaseDatabase.getInstance().getReference("Friends");
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference("Friends");
         editemai = v.findViewById(R.id.editfriend);
         checkInfo=new CheckgbsAndNetwork(getApplicationContext());
-
         cor=v.findViewById(R.id.cor);
         EMail = editemai.getText().toString().trim();
 
@@ -143,10 +151,10 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
         btnBottomSheet = v.findViewById(R.id.add);
 //        friend = v.findViewById(R.id.findyourfriend);
         progressDialog = new ProgressDialog(getApplicationContext());
-        SavedSahredPrefrenceSwitch();
         Recyclview();
 //        RecycleviewSerach();
         SwipRefresh();
+
 
 
         AddFriendd();
@@ -155,30 +163,20 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
 
         return v;
     }
+    public interface RecyclerViewReadyCallback {
+        void onLayoutReady();
+    }
 
     private boolean hasId(String idc){
         if(!TextUtils.isEmpty(idc)) {
             for (Friendsetandget fr : moviesList) {
-                if (fr.getEmail().equals(idc)) {
+                if (fr.getUsername().equals(idc)) {
                     return true;
                 }
                 break;
             }
         }
         return false;
-    }
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == Glarlly) {
-//            Uri uri = data.getData();
-//            StorageReference storageReference = s.child("Photos").child(uri.getLastPathSegment());
-//            storageReference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                @Override
-//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                }
-//            });
-//        }
     }
 
     public void SendatatoAdapter() {
@@ -187,61 +185,69 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
            moviesList.clear();
            mAdapter.notifyDataSetChanged();
            mSwipeRefreshLayout.setRefreshing(true);
-           mDatabaseRef = FirebaseDatabase.getInstance().getReference("Friends");
-           mListener= mDatabaseRef.addValueEventListener(new ValueEventListener() {
-               @Override
-               public void onDataChange(DataSnapshot dataSnapshot) {
-                   if (dataSnapshot.hasChild(IDd)) {
-                       mDatabaseRef.child(IDd).addChildEventListener(new ChildEventListener() {
-                           @Override
-                           public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                               Friendsetandget friendsetandget = dataSnapshot.getValue(Friendsetandget.class);
 
-                               if (friendsetandget != null && !hasId(friendsetandget.getEmail())) {
-                                   moviesList.add(0, friendsetandget);
-                                   mAdapter.notifyDataSetChanged();
-                                   mSwipeRefreshLayout.setRefreshing(false);
-                               }
+           mDatabasE = FirebaseDatabase.getInstance().getReference("Friends");
+      mDatabasE.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+            if(dataSnapshot.hasChild(IDd)){
+                mDatabasE.child(IDd).addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        Friendsetandget friendsetandget = dataSnapshot.getValue(Friendsetandget.class);
 
-                           }
+                        if (friendsetandget != null && !hasId(friendsetandget.getUsername())) {
+                            moviesList.add(0, friendsetandget);
+                            mAdapter.notifyDataSetChanged();
+                            mSwipeRefreshLayout.setRefreshing(false);
 
-                           @Override
-                           public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                        }
+                    }
 
-                           }
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                           @Override
-                           public void onChildRemoved(DataSnapshot dataSnapshot) {
+                    }
 
-                           }
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-                           @Override
-                           public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                    }
 
-                           }
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-                           @Override
-                           public void onCancelled(DatabaseError databaseError) {
+                    }
 
-                           }
-                       });
-                   } else {
-                       if (mSwipeRefreshLayout.isRefreshing()) {
-                           mSwipeRefreshLayout.setEnabled(false);
-                       }
-                   }
-               }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-               @Override
-               public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+            }else {
+                mSwipeRefreshLayout.setEnabled(false);
+            }
+            }
 
-               }
-           });
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
        }else{
            snackbarinternet();
        }
-
     }
+    private void recycle_animation(RecyclerView recyclerView)
+    {
+        final Context context = recyclerView.getContext();
+        final LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
+
+        recyclerView.setLayoutAnimation(controller);
+        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.scheduleLayoutAnimation();
+    }
+
     @Override
     public void onClick(View view, int position) {
 
@@ -307,6 +313,7 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
     @Override
     public void onRefresh() {
         SendatatoAdapter();
+
     }
 
     public void AddFriend(){
@@ -370,10 +377,10 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
                      key=child.getKey();
                      moviesList.remove(position);
                      child.getRef().removeValue();
+//                     mDatabasE.removeEventListener(mListener);
                      mAdapter.notifyDataSetChanged();
-                     mDatabasE.child(IDd)
-                             .orderByChild("email").removeEventListener(mListener);
-//                     mDatabas.removeEventListener(home.value);
+
+
                  }
              }
              @Override
@@ -390,8 +397,11 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
                public void onDataChange(DataSnapshot dataSnapshot) {
                    for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
                        dataSnapshot1.getRef().removeValue();
+
+
+
+
                    }
-//                   mDatabas.removeEventListener(home.value);
                }
                @Override
                public void onCancelled(DatabaseError databaseError) {
@@ -406,16 +416,16 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
     public void Recyclview(){
         recyclerView = v.findViewById(R.id.recycler_friend);
         recyclerView.setHasFixedSize(true);
-        mAdapter = new MoviesAdapter(moviesList);
+        mAdapter = new MoviesAdapter(moviesList,context);
         mAdapter.setClickButton(FragmentFriends.this);
         mAdapter.setClickListener(FragmentFriends.this);
-        mAdapter.setClickListen(FragmentFriends.this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(mAdapter);
+//        recyclerView.setItemAnimator(new DefaultItemAnimator());
 
+        recyclerView.setAdapter(mAdapter);
+        recycle_animation(recyclerView);
     }
 //    public void RecycleviewSerach(){
 //        friend.addTextChangedListener(new TextWatcher() {
@@ -443,6 +453,7 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
             @Override
             public void run() {
                 SendatatoAdapter();
+
             }
         });
     }
@@ -509,86 +520,5 @@ public class FragmentFriends extends Fragment implements switchinterface,ItemCli
 
     }
 
-    public void SavedSahredPrefrenceSwitch(){
-        SharedPreferences sharedPref =getActivity().getSharedPreferences("SA", MODE_PRIVATE);
-        String jsonFavorit = sharedPref.getString("Boolean", null);
-        Gson gson3 = new Gson();
-        Boolean[] favoriteIte = gson3.fromJson(jsonFavorit,Boolean[].class);
-        if(favoriteIte!=null) {
-            listBoolean = new ArrayList<>();
-            for (Boolean y : favoriteIte) {
-                listBoolean.add(y);
-            }
-        }
-        String jsonFavorites = sharedPref.getString("pos", null);
-        Gson gson2 = new Gson();
-        int[] favoriteItems = gson2.fromJson(jsonFavorites,int[].class);
-        if(favoriteItems!=null) {
-            listPositions = new ArrayList<>();
-            for (int i : favoriteItems) {
-                listPositions.add(i);
-            }
-        }
 
-    }
-
-    @Override
-    public void onClickCall(View view, int adapterPosition, Boolean A) {
-            ID =moviesList.get(adapterPosition).getId();
-        if(A){
-            Gson i=new Gson();
-            SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("SA", MODE_PRIVATE).edit();
-            myArrayList.add(adapterPosition);
-            String jsonFavorites = i.toJson(myArrayList);
-            editor.putString("pos", jsonFavorites);
-            myArrayListboolean.add(true);
-            String jsonFavori = i.toJson(myArrayListboolean);
-            editor.putString("Boolean", jsonFavori);
-            editor.commit();
-
-            DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference("Friends").child(ID);
-            databaseReference.orderByChild("email").equalTo(userR.getEmail())
-               .addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                        dataSnapshot1.getRef().child("privacy").setValue(true);
-                    }
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            });
-        }else {
-            SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("SA", MODE_PRIVATE).edit();
-           Gson i=new Gson();
-            myArrayList.add(adapterPosition);
-            String jsonFavorites = i.toJson(myArrayList);
-            editor.putString("pos", jsonFavorites);
-            myArrayListboolean.add(false);
-            String jsonFavori = i.toJson(myArrayListboolean);
-            editor.putString("Boolean", jsonFavori);
-
-            editor.commit();
-
-
-            DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference("Friends").child(ID);
-            databaseReference.orderByChild("email").equalTo(userR.getEmail())
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                                dataSnapshot1.getRef().child("privacy").setValue(false);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-
-        }
-
-    }
 }

@@ -11,6 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -30,22 +32,20 @@ import gbstracking.CheckgbsAndNetwork;
 import static android.content.Context.MODE_PRIVATE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
-public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHolder>{
+public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHolder> {
 
 
-    private ArrayList<Friendsetandget> mArrayList=new ArrayList<>();
-
-
+//    private ArrayList<Friendsetandget> mArrayList=new ArrayList<>();
+    Context context;
+    int  lastPosition=-1;
      public Boolean bollean;
     public ItemClickListener clickListene;
     public btnclickinterface btnclick;
-     public switchinterface switche;
+
      ArrayList<Integer> lis=new ArrayList<>();
     ArrayList<Boolean> lisbool=new ArrayList<>();
-    public   int selectedPos;
-   public  ArrayList<Friendsetandget> filteredList = new ArrayList<>();
+   public  ArrayList<Friendsetandget> filteredList=new ArrayList<>();
     View itemView;
-    CheckgbsAndNetwork checkInfo;
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView title;
@@ -61,20 +61,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
             btndelete=view.findViewById(R.id.imagedelete);
             onlinee=view.findViewById(R.id.online);
                     view.setOnClickListener(this);
-            switchClick=itemView.findViewById(R.id.simpleSwitch);
-            switchClick.setOnClickListener(this);
+
 
         }
         @Override
         public void onClick(View view) {
-
-
                 if (clickListene != null) clickListene.onClick(view, getLayoutPosition());
-
         }
-    }
-    public void setClickListen(switchinterface switchinterface) {
-        this.switche = switchinterface;
     }
 
     public void setClickListener(ItemClickListener itemClickListener) {
@@ -83,10 +76,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
     public void setClickButton(btnclickinterface btnclic){
         this.btnclick=btnclic;
     }
-    public MoviesAdapter(ArrayList<Friendsetandget> moviesList ) {
-
-        mArrayList = moviesList;
+    public MoviesAdapter(ArrayList<Friendsetandget> moviesList,Context context ) {
+//        mArrayList = moviesList;
         filteredList=moviesList;
+        this.context=context;
     }
 
     @Override
@@ -129,8 +122,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         Friendsetandget movie = filteredList.get(position);
-        checkInfo=new CheckgbsAndNetwork(getApplicationContext());
-          holder.switchClick.setChecked(true);
+      FragmentFriends.check=false;
 
         if (movie.getUsername() != null) {
             holder.title.setText(movie.getUsername());
@@ -146,34 +138,16 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
                 .placeholder(R.drawable.emptyprofile)
                 .into(holder.photoo);
 
-        lisbool=FragmentFriends.listBoolean;
+        lisbool = FragmentFriends.listBoolean;
         lis = FragmentFriends.listPositions;
 
-            if (lis != null) {
 
-                for (int I = 0; I < lis.size(); I++) {
-                    if (position == lis.get(I)) {
-                        holder.switchClick.setChecked(lisbool.get(I));
-
-                    }
-                }
-
-
-        }
        holder.btndelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 btnclick.onClickCallback(view,holder.getAdapterPosition());
             }
         });
-
-       holder.switchClick.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-           @Override
-           public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                   switche.onClickCall(compoundButton, holder.getAdapterPosition(), b);
-
-           }
-       });
 
 
 
@@ -183,6 +157,14 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
        }else {
            holder.onlinee.setVisibility(View.INVISIBLE);
        }
+
+        Animation animation = AnimationUtils.loadAnimation(context,
+                (position > lastPosition) ? R.anim.recycle_up_from_bottom
+                        : R.anim.recycle_down_from_top);
+        holder.itemView.startAnimation(animation);
+        lastPosition = position;
+
+
 
     }
 

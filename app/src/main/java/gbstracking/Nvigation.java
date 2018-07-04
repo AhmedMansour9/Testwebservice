@@ -6,15 +6,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -29,7 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.accountkit.AccountKit;
-import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -48,8 +45,10 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -88,6 +87,7 @@ public class Nvigation extends AppCompatActivity
     SharedPreferences sharedPreferences;
     Boolean warn;
     CheckgbsAndNetwork checkInfo;
+    StorageReference riversRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -229,66 +229,63 @@ public class Nvigation extends AppCompatActivity
             filePath = data.getData();
             if(filePath != null)
             {
+                Toast.makeText(this, ""+filePath, Toast.LENGTH_SHORT).show();
                 if (checkInfo.isNetworkAvailable(getApplicationContext())) {
                     final ProgressDialog progressDialog = new ProgressDialog(Nvigation.this);
                     progressDialog.setTitle("Uploading...");
                     progressDialog.show();
 
-                    StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
-                    ref.putFile(filePath)
-                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                    progressDialog.dismiss();
-                                    Toast.makeText(getApplicationContext(), "Uploaded", Toast.LENGTH_SHORT).show();
-                                    Uri u=taskSnapshot.getUploadSessionUri();
+                    storageReference = storage.getReferenceFromUrl("gs://test-44a5a.appspot.com");
 
+                    StorageReference imageRef = storageReference.child("images" + "/" + filePath + ".jpg");
+                    imageRef.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Log.e("ss", "onSuccess: " + taskSnapshot);
+                            progressDialog.dismiss();
+                            Uri u = taskSnapshot.getDownloadUrl();
+                            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-                                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setPhotoUri(u)
+                                    .build();
 
-                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                            .setPhotoUri(Uri.parse(u.toString()))
-                                            .build();
+                            user.updateProfile(profileUpdates)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d("", "User profile updated.");
+                                                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(IDd);
+                                                DatabaseReference data = databaseReference.child("photo");
+                                                data.setValue(user.getPhotoUrl().toString());
+                                                View headerView = navigationView.getHeaderView(0);
+                                                texName = headerView.findViewById(R.id.texkName);
+                                                i = headerView.findViewById(R.id.imagecom);
+                                                c = headerView.findViewById(R.id.person_image);
+                                                Picasso.with(getApplicationContext())
+                                                        .load(user.getPhotoUrl())
+                                                        .into(c);
+                                                i.setVisibility(View.INVISIBLE);
 
-                                    user.updateProfile(profileUpdates)
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()) {
-                                                        Log.d("", "User profile updated.");
-                                                        DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference("Users").child(IDd);
-                                                        DatabaseReference data=databaseReference.child("photo");
-                                                        data.setValue(user.getPhotoUrl().toString());
-                                                        View headerView = navigationView.getHeaderView(0);
-                                                        texName =  headerView.findViewById(R.id.texkName);
-                                                        i=headerView.findViewById(R.id.imagecom);
-                                                        c=headerView.findViewById(R.id.person_image);
-                                                        Picasso.with(getApplicationContext())
-                                                                .load(user.getPhotoUrl())
-                                                                .into(c);
-                                                        i.setVisibility(View.INVISIBLE);
-
-                                                    }
-                                                }
-                                            });
-
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
+                                            }
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     progressDialog.dismiss();
-                                    Toast.makeText(getApplicationContext(), "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            })
-                            .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                                    double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
-                                            .getTotalByteCount());
-                                    progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                                    Toast.makeText(getApplicationContext(), "Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             });
+                        }}).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                                    .getTotalByteCount());
+                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
+
+                        }
+                    });
 
                 }else {
                     snackbarinternet();
@@ -315,8 +312,6 @@ public class Nvigation extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-
 
         switch (item.getItemId()) {
             case R.id.home:
@@ -335,12 +330,12 @@ public class Nvigation extends AppCompatActivity
                 SharedPreferences share=getSharedPreferences("Warr",MODE_PRIVATE);
                 warn=share.getBoolean("warnmessa",false);
 
-//                if(warn){
-//                        fr= new warnimgernecy();
-//                    }else {
-//                    fr = new welcomewarning();
-//                    }
-                fr = new welcomewarning();
+                if(warn){
+                        fr= new warnimgernecy();
+                    }else {
+                    fr = new welcomewarning();
+                    }
+
                 break;
 
             case R.id.transport:

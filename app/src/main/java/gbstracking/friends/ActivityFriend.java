@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -34,6 +35,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.text.format.Time;
@@ -43,9 +45,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -105,6 +109,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -191,15 +196,24 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
     ImageView Draw2;
     ImageView phone;
     final int REQUEST_LOCATION_CODE = 99;
+    public Switch switchClick;
+    ArrayList<Boolean> myArrayListboolean;
+    ArrayList<String> myArrayListStrings;
+    public static ArrayList<String> emails = new ArrayList<>();;
+    public static ArrayList<Boolean> listBoolean = new ArrayList<>();;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activityfriend);
         polylines = new ArrayList<>();
         listlatlong = new ArrayList<>();
+        myArrayListboolean=new ArrayList<Boolean>();
+        myArrayListStrings=new ArrayList<String>();
         mGeoDataClient = Places.getGeoDataClient(this, null);
         phone = findViewById(R.id.phonecall);
         Draw2 = findViewById(R.id.DRAW);
+        switchClick=findViewById(R.id.simpleSwitc);
         Rot90 = findViewById(R.id.rot90);
         Rot180 = findViewById(R.id.rot180);
         floatbtn = findViewById(R.id.myLocationButton2);
@@ -232,6 +246,7 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
             StrictMode.setThreadPolicy(policy);
         }
         getintentData();
+        SavedSahredPrefrenceSwitch();
         CheckAllowUser();
         getstreetlocation();
         SendingMassege();
@@ -245,6 +260,91 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
             public void Callback(final GetandSetFriendOnlineHome e) {
                 lati = e.getLat();
                 longe = e.getLon();
+
+            }
+        });
+
+        switchClick.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    SharedPreferences.Editor editor =getSharedPreferences("SWITCH", MODE_PRIVATE).edit();
+                    SavedSahredPrefrence();
+                    if(emails!=null) {
+                        for (int i = 0; i < emails.size(); i++) {
+                            if (emails.equals(email)) {
+                                emails.remove(emails.get(i));
+                                listBoolean.remove(listBoolean.get(i));
+                            }
+                        }
+                    }
+                    Gson i = new Gson();
+                    myArrayListboolean.add(true);
+                    String jsonFavorites = i.toJson(myArrayListboolean);
+                    editor.putString("Boolean", jsonFavorites);
+                    myArrayListStrings.add(email);
+                    String jsonFavori = i.toJson(myArrayListStrings);
+                    editor.putString("email", jsonFavori);
+                    editor.commit();
+
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Friends").child(id);
+                    databaseReference.orderByChild("email").equalTo(user.getEmail())
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                        dataSnapshot1.getRef().child("privacy").setValue(true);
+                                        Snackbar.make(Scrollfrie,username+" "+getResources().getString(R.string.Sharelocation),1500).show();
+
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                }
+                            });
+                } else {
+                    Snackbar.make(Scrollfrie,username+" "+getResources().getString(R.string.shareloc),1500).show();
+                    SharedPreferences.Editor editor = getSharedPreferences("SWITCH", MODE_PRIVATE).edit();
+                    SavedSahredPrefrence();
+                    if(emails!=null) {
+                        for (int i = 0; i < emails.size(); i++) {
+                            if (emails.equals(email)) {
+                                emails.remove(emails.get(i));
+                                listBoolean.remove(listBoolean.get(i));
+                            }
+                        }
+                    }
+
+                    Gson i = new Gson();
+                    myArrayListboolean.add(false);
+                    String jsonFavorites = i.toJson(myArrayListboolean);
+                    editor.putString("Boolean", jsonFavorites);
+                    myArrayListStrings.add(email);
+                    String jsonFavori = i.toJson(myArrayListStrings);
+                    editor.putString("email", jsonFavori);
+
+                    editor.commit();
+
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Friends").child(id);
+                    databaseReference.orderByChild("email").equalTo(user.getEmail())
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                        dataSnapshot1.getRef().child("privacy").setValue(false);
+                                        Snackbar.make(Scrollfrie,username+" "+getResources().getString(R.string.Sharelocation),1500).show();
+
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                }
+
 
             }
         });
@@ -1192,6 +1292,58 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
             }
         };
         MyVolley.getInstance(getApplicationContext()).addToRequestQueue(stringRequest);
+    }
+
+    public void SavedSahredPrefrenceSwitch(){
+        SharedPreferences sharedPref =getSharedPreferences("SWITCH", MODE_PRIVATE);
+        String jsonFavorit = sharedPref.getString("Boolean", null);
+        Gson gson3 = new Gson();
+        Boolean[] favoriteIte = gson3.fromJson(jsonFavorit,Boolean[].class);
+        if(favoriteIte!=null) {
+
+            for (Boolean y : favoriteIte) {
+                listBoolean.add(y);
+            }
+        }
+        String jsonFavorites = sharedPref.getString("email", null);
+        Gson gson2 = new Gson();
+        String[] favoriteItems = gson2.fromJson(jsonFavorites,String[].class);
+        if(favoriteItems!=null) {
+
+            for (String i : favoriteItems) {
+                emails.add(i);
+            }
+        }
+        if (emails != null) {
+            for (int I = 0; I < emails.size(); I++) {
+                if (email.equals(emails.get(I))) {
+                    switchClick.setChecked(listBoolean.get(I));
+                }
+            }
+        }
+
+    }
+    public void SavedSahredPrefrence(){
+        SharedPreferences sharedPref =getSharedPreferences("SWITCH", MODE_PRIVATE);
+        String jsonFavorit = sharedPref.getString("Boolean", null);
+        Gson gson3 = new Gson();
+        Boolean[] favoriteIte = gson3.fromJson(jsonFavorit,Boolean[].class);
+        if(favoriteIte!=null) {
+
+            for (Boolean y : favoriteIte) {
+                listBoolean.add(y);
+            }
+        }
+        String jsonFavorites = sharedPref.getString("email", null);
+        Gson gson2 = new Gson();
+        String[] favoriteItems = gson2.fromJson(jsonFavorites,String[].class);
+        if(favoriteItems!=null) {
+
+            for (String i : favoriteItems) {
+                emails.add(i);
+            }
+        }
+
     }
 
 

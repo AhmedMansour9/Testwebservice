@@ -111,7 +111,6 @@ public class warnimgernecy extends Fragment {
 
         SharedPreferences share=getActivity().getSharedPreferences("Number", Context.MODE_PRIVATE);
          number=share.getString("Num","");
-        Toast.makeText(getApplicationContext(), ""+number, Toast.LENGTH_SHORT).show();
         SharedPreferences sha= getApplicationContext().getSharedPreferences("Usersname", MODE_PRIVATE);
         String jsonFavorites = sha.getString("users", null);
         Gson gson2 = new Gson();

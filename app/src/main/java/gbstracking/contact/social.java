@@ -2,13 +2,16 @@ package gbstracking.contact;
 
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.gbstracking.BuildConfig;
 import com.gbstracking.R;
 
 
@@ -37,13 +40,22 @@ public class social extends Fragment {
                 intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Check out this App!");
                 startActivity(Intent.createChooser(intent, "Share"));
 */
+
+//                if (android.os.Build.VERSION.SDK_INT > ANDROID_BUILD_VERSION_LOLLIPOP) {
+//                } else {
+//
+//                }
+                //  context.grantUriPermission();
+                //
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=zamaleekonlinee.zamalekonline");
                 sendIntent.setType("text/plain");
-                startActivity(Intent.createChooser(sendIntent,
-                        "Share"));
-
+                if (null != sendIntent.resolveActivity(getActivity().getPackageManager())) {
+                    startActivity(Intent.createChooser(sendIntent,
+                            "Share"));
+                }
+//                Uri uri = FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID + ".provider",fileImagePath);
 
             }
         });

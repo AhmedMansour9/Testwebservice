@@ -4,6 +4,7 @@ package gbstracking.friends;
 import android.net.Uri;
 import android.os.Bundle;
 
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -13,6 +14,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.gbstracking.R;
@@ -28,8 +30,11 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 
+import gbstracking.CheckgbsAndNetwork;
 import gbstracking.Userlogin.UserloginMain;
 import gbstracking.recycleviewfriends.UserEmail;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by HP on 19/04/2018.
@@ -52,6 +57,8 @@ public class FragmentRequests extends Fragment implements btnclickRequests, Swip
     DatabaseReference currnetuser;
     FirebaseUser user;
     FirebaseAuth mAuth;
+    CheckgbsAndNetwork checkInfo;
+    RelativeLayout layoutrequests;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -60,9 +67,10 @@ public class FragmentRequests extends Fragment implements btnclickRequests, Swip
         user=mAuth.getCurrentUser();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("FriendsRequests");
         data = FirebaseDatabase.getInstance().getReference("Users");
-
+        checkInfo=new CheckgbsAndNetwork(getApplicationContext());
         auth=FirebaseAuth.getInstance();
         user=auth.getCurrentUser();
+        layoutrequests=v.findViewById(R.id.layoutrequests);
         IDd=user.getUid();
         moviesList=new ArrayList<>();
         recyclerView = v.findViewById(R.id.recycler_friendRequest);
@@ -95,27 +103,34 @@ public class FragmentRequests extends Fragment implements btnclickRequests, Swip
     @Override
     public void onClickCallback(View view, final int adapterPosition) {
         String email=moviesList.get(adapterPosition).getEmail();
-        mDatabaseRef.child(IDd).orderByChild("email").equalTo(email)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                            moviesList.remove(adapterPosition);
-                            dataSnapshot1.getRef().removeValue();
-                            mAdapter.notifyDataSetChanged();
+        if(checkInfo.isNetworkAvailable(getContext())) {
+            mDatabaseRef.child(IDd).orderByChild("email").equalTo(email)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                moviesList.remove(adapterPosition);
+                                dataSnapshot1.getRef().removeValue();
+                                mAdapter.notifyDataSetChanged();
+                            }
+
                         }
 
-                    }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-        Sendhisemailtome(email);
-        Sendmyemailtohim(email);
+                        }
+                    });
+            Sendhisemailtome(email);
+            Sendmyemailtohim(email);
+        }else {
+            snackbarinternet();
+        }
     }
+    public void snackbarinternet(){
+        Snackbar.make(layoutrequests,getResources().getString(R.string.Nointernet),1500).show();
 
+    }
     @Override
     public void onClickCallb(View view, int adapterPosition) {
         String email=moviesList.get(adapterPosition).getEmail();
@@ -133,37 +148,41 @@ public class FragmentRequests extends Fragment implements btnclickRequests, Swip
         return false;
     }
     public void SendatatoAdapter() {
-        lst.clear();
-        moviesList.clear();
-        mAdapter.notifyDataSetChanged();
-        mSwipeRefreshLayout.setRefreshing(true);
-        mDatabaseRef.child(IDd).addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                emailsetandget email= dataSnapshot.getValue(emailsetandget.class);
-                if (email != null && !hasId(email.getEmail())) {
-                    moviesList.add(0, email);
-                    mAdapter.notifyDataSetChanged();
+        if(checkInfo.isNetworkAvailable(getApplicationContext())) {
+            lst.clear();
+            moviesList.clear();
+            mAdapter.notifyDataSetChanged();
+            mSwipeRefreshLayout.setRefreshing(true);
+            mDatabaseRef.child(IDd).addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    emailsetandget email = dataSnapshot.getValue(emailsetandget.class);
+                    if (email != null && !hasId(email.getEmail())) {
+                        moviesList.add(0, email);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            }
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                }
 
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-            }
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                }
 
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-            }
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }else {
+            snackbarinternet();
+        }
         mSwipeRefreshLayout.setRefreshing(false);
 
     }
@@ -227,20 +246,23 @@ public class FragmentRequests extends Fragment implements btnclickRequests, Swip
 
     }
     public void DeleteRequest(String Email, final int adapterPosition){
-        mDatabaseRef.child(IDd).orderByChild("email").equalTo(Email).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot da:dataSnapshot.getChildren()){
-                    moviesList.remove(adapterPosition);
-                    da.getRef().removeValue();
-                    mAdapter.notifyDataSetChanged();
+        if(checkInfo.isNetworkAvailable(getApplicationContext())) {
+            mDatabaseRef.child(IDd).orderByChild("email").equalTo(Email).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot da : dataSnapshot.getChildren()) {
+                        moviesList.remove(adapterPosition);
+                        da.getRef().removeValue();
+                        mAdapter.notifyDataSetChanged();
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }else {
+            snackbarinternet();
+        }
     }
 }

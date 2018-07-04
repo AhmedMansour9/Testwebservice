@@ -21,7 +21,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_200sdp"
+            android:layout_height="@dimen/_180sdp"
             android:id="@+id/framemap">
             <fragment
                 android:id="@+id/map"
@@ -227,7 +227,30 @@
                 </RelativeLayout>
 
             </android.support.v7.widget.CardView>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:id="@+id/swit"
+                android:layout_marginTop="@dimen/_100sdp"
+                android:layout_marginRight="@dimen/_20sdp"
+                android:layout_marginLeft="@dimen/_20sdp"
 
+                android:background="#fff"
+                android:layout_height="wrap_content">
+                <Switch
+                    android:id="@+id/simpleSwitc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:textOn="On"
+                    android:layout_marginRight="@dimen/_5sdp"
+                    android:textOff="Off"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:textColor="#f00"
+                    android:text="@string/LocationShare"
+                    android:layout_centerInParent="true"
+                    android:textSize="15sp"/>
+
+            </RelativeLayout>
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -235,7 +258,7 @@
                 app:cardBackgroundColor="@android:color/white"
                 android:layout_margin="@dimen/activity_horizontal_margin"
                 app:cardCornerRadius="5dp"
-                android:layout_below="@+id/FrienCARDVIEW"
+                android:layout_below="@+id/swit"
                 app:cardElevation="7dp">
                 <LinearLayout
                     android:layout_width="match_parent"

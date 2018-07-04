@@ -139,4 +139,8 @@
     <string name="useralready">هذا العضو بالفعل صديقك </string>
     <string name="requestsentAlready">تم ارسال طلب الصداقة مسبقا</string>
     <string name="requestsent">تم ارسال طلب الصداقة</string>
+    <string name="nolocation">موقع الجغرافي غير متاح</string>
+    <string name="shareloc">لا يستطيع ان يري موقعك الجغرافي </string>
+    <string name="Sharelocation">يستطيع ان يري موقعك الجغرافي في الوقت الحالي </string>
+    <string name="LocationShare">شارك موقعك الجغرافي </string>
 </resources>

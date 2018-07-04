@@ -157,6 +157,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     Context context;
     ArrayList<String> listid;
     String ID;
+    String  KEY;
     com.getbase.floatingactionbutton.FloatingActionButton Share;
      com.getbase.floatingactionbutton.FloatingActionButton btngetlocation;
     IGoogleApi mService;
@@ -472,6 +473,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 bolleaanuser u = dataSnapshot.getValue(bolleaanuser.class);
+                if(u.getOnline()!=null)
                 if (u.getOnline().equals(true)) {
                     final Time now = new Time();
                     now.setToNow();
@@ -584,12 +586,13 @@ public class home extends Fragment implements itemClickListener, RoutingListener
             public void onDataChange(DataSnapshot dataSnapshot) {
                 online = dataSnapshot.getValue(bolleaanuser.class);
                 dat = FirebaseDatabase.getInstance().getReference("Friends");
-                dat.addListenerForSingleValueEvent(new ValueEventListener() {
+                dat.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                          String  KEY = dataSnapshot1.getKey();
-                            dates.child(KEY).orderByChild("id").equalTo(IDd).addListenerForSingleValueEvent(new ValueEventListener() {
+                            KEY = dataSnapshot1.getKey();
+                            dates = FirebaseDatabase.getInstance().getReference("Friends").child(KEY);
+                            dates.orderByChild("id").equalTo(IDd).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     for (DataSnapshot dataa : dataSnapshot.getChildren()) {
@@ -709,11 +712,11 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     public void online(){
         IDd=userR.getUid();
         DatabaseReference data = FirebaseDatabase.getInstance().getReference("Users");
-        value=data.addValueEventListener(new ValueEventListener() {
+        data.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-              online=new bolleaanuser();
                 if (dataSnapshot.hasChild(IDd)) {
+                    online=new bolleaanuser();
                     connectedRef = FirebaseDatabase.getInstance().getReference("Users").child(IDd);
                     connectedRef.addValueEventListener(new ValueEventListener() {
                         @Override
@@ -753,6 +756,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                         y = datasnap.getValue(GetAndSethomeFriends.class);
                         Online = y.getOnline();
                         Privacy = y.getPrivacy();
+                        if(Online!=null&&Privacy!=null)
                         if (Online && Privacy) {
                             final String Id = y.getId();
                             if(Id!=null) {
@@ -818,19 +822,20 @@ public class home extends Fragment implements itemClickListener, RoutingListener
         datalocation.child("l").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                List<Object> lis = (List<Object>) dataSnapshot.getValue();
-                if (lis.get(0) != null) {
-                    lati = Double.parseDouble(lis.get(0).toString());
-                }
-                if (lis.get(1) != null) {
-                    longe = Double.parseDouble(lis.get(1).toString());
-                }
-                LatLng a=new LatLng(lati,longe);
-                CameraPosition currentPlace = new CameraPosition.Builder()
-                        .target(a)
-                        .bearing(240).tilt(30).zoom(16f).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(
-                        currentPlace));
+                    List<Object> lis = (List<Object>) dataSnapshot.getValue();
+                    if (lis.get(0) != null) {
+                        lati = Double.parseDouble(lis.get(0).toString());
+                    }
+                    if (lis.get(1) != null) {
+                        longe = Double.parseDouble(lis.get(1).toString());
+                    }
+                    LatLng a = new LatLng(lati, longe);
+                    CameraPosition currentPlace = new CameraPosition.Builder()
+                            .target(a)
+                            .bearing(240).tilt(30).zoom(16f).build();
+                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(
+                            currentPlace));
+
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -893,11 +898,12 @@ public class home extends Fragment implements itemClickListener, RoutingListener
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 listid.clear();
-                for (DataSnapshot datasnap : dataSnapshot.getChildren()) {
+                for (final DataSnapshot datasnap : dataSnapshot.getChildren()) {
                     if(datasnap.hasChild("privacy")) {
                         y = datasnap.getValue(GetAndSethomeFriends.class);
                         Online = y.getOnline();
                         Privacy = y.getPrivacy();
+                        if(Online!=null&&Privacy!=null)
                         if (Online && Privacy) {
                             final String Id = y.getId();
                             final String useer=y.getUsername();
@@ -906,19 +912,19 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                             datalocation.child("l").addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    List<Object> lis = (List<Object>) dataSnapshot.getValue();
-                                    if (lis.get(0) != null) {
-                                        lati = Double.parseDouble(lis.get(0).toString());
-                                    }
-                                    if (lis.get(1) != null) {
-                                        longe = Double.parseDouble(lis.get(1).toString());
-                                    }
-                                    t.setUsername(useer);
-                                    t.setPhoto(photto);
-                                    t.setLat(lati);
-                                    t.setLon(longe);
-                                    t.setId(Id);
-                                    fire.Callba(t);
+                                        List<Object> lis = (List<Object>) dataSnapshot.getValue();
+                                        if (lis.get(0) != null) {
+                                            lati = Double.parseDouble(lis.get(0).toString());
+                                        }
+                                        if (lis.get(1) != null) {
+                                            longe = Double.parseDouble(lis.get(1).toString());
+                                        }
+                                        t.setUsername(useer);
+                                        t.setPhoto(photto);
+                                        t.setLat(lati);
+                                        t.setLon(longe);
+                                        t.setId(Id);
+                                        fire.Callba(t);
 
                                 }
                                 @Override

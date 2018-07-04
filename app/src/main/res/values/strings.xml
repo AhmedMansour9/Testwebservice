@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Friends Location</string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -139,4 +139,8 @@
     <string name="useralready">User Already Your Friend</string>
     <string name="requestsentAlready">Request Already Sent</string>
     <string name="requestsent">Sending Request</string>
+    <string name="nolocation">Location not available</string>
+    <string name="shareloc">Canot Access Your Location</string>
+    <string name="Sharelocation">Can See Your Location Now</string>
+    <string name="LocationShare">Share Your Location</string>
 </resources>
