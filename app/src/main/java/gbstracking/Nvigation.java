@@ -87,7 +87,7 @@ public class Nvigation extends AppCompatActivity
     SharedPreferences sharedPreferences;
     Boolean warn;
     CheckgbsAndNetwork checkInfo;
-    StorageReference riversRef;
+    DatabaseReference data;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +95,7 @@ public class Nvigation extends AppCompatActivity
         drawer = findViewById(R.id.drawer_layout);
         AccountKit.initialize(getApplicationContext());
         user = FirebaseAuth.getInstance().getCurrentUser();
+        data=FirebaseDatabase.getInstance().getReference("Friends");
         mAuth = FirebaseAuth.getInstance();
         mHandler = new Handler();
          toolbar = findViewById(R.id.toolbar);
@@ -361,10 +362,10 @@ public class Nvigation extends AppCompatActivity
                     View headerView = navigationView.getHeaderView(0);
                     texName =headerView.findViewById(R.id.texkName);
                     texName.setText("");
-                    authh.getInstance().signOut();
-                    AccountKit.logOut();
+                    FirebaseAuth.getInstance().signOut();
                     startActivity(new Intent(Nvigation.this,loginmain.class));
                     finish();
+                    AccountKit.logOut();
 
                 }else {
                     snackbarinternet();

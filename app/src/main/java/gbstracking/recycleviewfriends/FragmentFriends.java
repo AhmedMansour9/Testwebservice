@@ -187,36 +187,28 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
            mSwipeRefreshLayout.setRefreshing(true);
 
            mDatabasE = FirebaseDatabase.getInstance().getReference("Friends");
-      mDatabasE.addListenerForSingleValueEvent(new ValueEventListener() {
+            mDatabasE.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
             if(dataSnapshot.hasChild(IDd)){
-                mDatabasE.child(IDd).addChildEventListener(new ChildEventListener() {
+                mDatabasE.child(IDd).addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                        Friendsetandget friendsetandget = dataSnapshot.getValue(Friendsetandget.class);
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        moviesList.clear();
+                        mAdapter.notifyDataSetChanged();
+                        mSwipeRefreshLayout.setRefreshing(true);
 
-                        if (friendsetandget != null && !hasId(friendsetandget.getUsername())) {
-                            moviesList.add(0, friendsetandget);
-                            mAdapter.notifyDataSetChanged();
-                            mSwipeRefreshLayout.setRefreshing(false);
+                        for(DataSnapshot data:dataSnapshot.getChildren()){
+                            Friendsetandget friendsetandget = data.getValue(Friendsetandget.class);
+
+                            if (friendsetandget != null && !hasId(friendsetandget.getUsername())) {
+                                moviesList.add(0, friendsetandget);
+                                mAdapter.notifyDataSetChanged();
+                                mSwipeRefreshLayout.setRefreshing(false);
+
+                            }
 
                         }
-                    }
-
-                    @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
                     }
 
                     @Override

@@ -34,12 +34,14 @@ public class social extends Fragment {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-             /*   Intent intent = new Intent(Intent.ACTION_SEND);
+               Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("text/plain");
                 intent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=zamaleekonlinee.zamalekonline");
-                intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Check out this App!");
-                startActivity(Intent.createChooser(intent, "Share"));
-*/
+//                intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Check out this App!");
+                if (null != intent.resolveActivity(getActivity().getPackageManager())) {
+                    startActivity(Intent.createChooser(intent, "Share"));
+                }
+
 
 //                if (android.os.Build.VERSION.SDK_INT > ANDROID_BUILD_VERSION_LOLLIPOP) {
 //                } else {
@@ -47,14 +49,10 @@ public class social extends Fragment {
 //                }
                 //  context.grantUriPermission();
                 //
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=zamaleekonlinee.zamalekonline");
-                sendIntent.setType("text/plain");
-                if (null != sendIntent.resolveActivity(getActivity().getPackageManager())) {
-                    startActivity(Intent.createChooser(sendIntent,
-                            "Share"));
-                }
+//                Intent sendIntent = new Intent();
+//                sendIntent.setAction(Intent.ACTION_SEND);
+//                sendIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=zamaleekonlinee.zamalekonline");
+//                sendIntent.setType("text/plain");
 //                Uri uri = FileProvider.getUriForFile(getContext(), BuildConfig.APPLICATION_ID + ".provider",fileImagePath);
 
             }

@@ -43,7 +43,7 @@ public class windowinfofriend implements GoogleMap.InfoWindowAdapter {
 
         CircleImageView iv =viewe.findViewById(R.id.imgfriendss);
         Uri u= Uri.parse(infoWindowData.getImage());
-        Picasso.with(context).load(u).resize(250,250).into(iv);
+        Picasso.with(context).load(u).placeholder(R.drawable.emptyprofile).resize(250,250).into(iv);
 
         return viewe;
     }

@@ -5,11 +5,11 @@ package gbstracking;
  */
 
 public class GetAndSethomeFriends {
-    Boolean online;
-    Boolean privacy;
-    String photo;
-    String username;
-    String id;
+  private   Boolean online;
+  private   Boolean privacy;
+  private   String photo;
+  private   String username;
+  private   String id;
 
     public GetAndSethomeFriends(){}
     public GetAndSethomeFriends(Boolean online, Boolean privacy, String photo,String username,String id) {

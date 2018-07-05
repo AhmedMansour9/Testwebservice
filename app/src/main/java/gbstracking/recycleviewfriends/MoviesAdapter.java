@@ -43,7 +43,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
     public btnclickinterface btnclick;
 
      ArrayList<Integer> lis=new ArrayList<>();
-    ArrayList<Boolean> lisbool=new ArrayList<>();
    public  ArrayList<Friendsetandget> filteredList=new ArrayList<>();
     View itemView;
 
@@ -77,7 +76,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
         this.btnclick=btnclic;
     }
     public MoviesAdapter(ArrayList<Friendsetandget> moviesList,Context context ) {
-//        mArrayList = moviesList;
         filteredList=moviesList;
         this.context=context;
     }
@@ -137,9 +135,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
                 .load(u)
                 .placeholder(R.drawable.emptyprofile)
                 .into(holder.photoo);
-
-        lisbool = FragmentFriends.listBoolean;
-        lis = FragmentFriends.listPositions;
 
 
        holder.btndelete.setOnClickListener(new View.OnClickListener() {

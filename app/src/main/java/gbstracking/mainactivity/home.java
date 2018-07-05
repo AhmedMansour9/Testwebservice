@@ -143,9 +143,8 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     String IDd;
     FirebaseAuth mAuth;
     bolleaanuser online;
-    Boolean Online;
     HashMap<String, Marker> markerlist = new HashMap<>();
-    Boolean Privacy;
+
     GoogleMap googleMap;
     GoogleApiClient mGoogleApiClient;
     private static final String URL_REGISTER_DEVICE = "https://zamaleksongs.000webhostapp.com/RegisterDevice.php";
@@ -189,7 +188,8 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     final public static int REQUEST_LOCATION_CODE = 99;
     CoordinatorLayout framehome;
     SharedPreferences sharedPreferences;
-
+    DatabaseReference dataAA;
+   public static ValueEventListener listner;
     public home() {
     }
 
@@ -214,7 +214,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
         lismarket = new ArrayList<Marker>();
         lsst = new ArrayList<>();
         IDd = userR.getUid();
-//        y = new GetAndSethomeFriends();
+        y = new GetAndSethomeFriends();
         polinlist = new ArrayList<>();
         startmove = v.findViewById(R.id.dirstart);
         datalocation = FirebaseDatabase.getInstance().getReference("Location");
@@ -234,7 +234,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
         }
         Recyclview();
         checkLocationPermission();
-
+        online();
 
         Nvigation.toggle = new ActionBarDrawerToggle(
                 getActivity(), Nvigation.drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -265,7 +265,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
         if (userR == null) {
             logoutuser();
         }
-        online();
+
 
         sendTokenToServer();
 
@@ -580,27 +580,22 @@ public class home extends Fragment implements itemClickListener, RoutingListener
 
     public void Chaneeuseronline() {
         IDd = userR.getUid();
-        DatabaseReference data = FirebaseDatabase.getInstance().getReference("Users").child(IDd);
-        data.addValueEventListener(new ValueEventListener() {
+        datausers.child(IDd).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 online = dataSnapshot.getValue(bolleaanuser.class);
-                dat = FirebaseDatabase.getInstance().getReference("Friends");
-                dat.addValueEventListener(new ValueEventListener() {
+                data.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                             KEY = dataSnapshot1.getKey();
-                            dates = FirebaseDatabase.getInstance().getReference("Friends").child(KEY);
-                            dates.orderByChild("id").equalTo(IDd).addValueEventListener(new ValueEventListener() {
+                            data.child(KEY).orderByChild("id").equalTo(IDd).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     for (DataSnapshot dataa : dataSnapshot.getChildren()) {
-                                            String email = dataa.child("email").getValue().toString();
-                                            if (email != null) {
                                                 dataa.getRef().child("online").setValue(online.getOnline());
                                                 dataa.getRef().child("online").onDisconnect().setValue(false);
-                                            }
+
 
                                     }
                                 }
@@ -716,7 +711,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild(IDd)) {
-                    online=new bolleaanuser();
+
                     connectedRef = FirebaseDatabase.getInstance().getReference("Users").child(IDd);
                     connectedRef.addValueEventListener(new ValueEventListener() {
                         @Override
@@ -737,31 +732,25 @@ public class home extends Fragment implements itemClickListener, RoutingListener
             }
         });
     }
-    private void hidekeyboard(){
-        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
-    }
-
 
     public void GetFriendsOnline(final Firebasecallback firebasecallback){
         String Id=userR.getUid();
-        data.child(Id).addValueEventListener(new ValueEventListener() {
+         data.child(Id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 googleMap.clear();
                 lstfriends.clear();
                 adpter.notifyDataSetChanged();
                 for (DataSnapshot datasnap : dataSnapshot.getChildren()) {
-                    if(datasnap.hasChild("privacy")) {
-                        y = datasnap.getValue(GetAndSethomeFriends.class);
-                        Online = y.getOnline();
-                        Privacy = y.getPrivacy();
-                        if(Online!=null&&Privacy!=null)
+                    y = datasnap.getValue(GetAndSethomeFriends.class);
+                    if (y.getOnline() != null) {
+                        Boolean Online = y.getOnline();
+                        Boolean Privacy = y.getPrivacy();
                         if (Online && Privacy) {
                             final String Id = y.getId();
-                            if(Id!=null) {
-                                final String useer=y.getUsername();
-                                final String photto=y.getPhoto();
+                            if (Id != null) {
+                                String useer = y.getUsername();
+                                String photto = y.getPhoto();
                                 u.setUsername(useer);
                                 u.setPhoto(photto);
                                 u.setId(Id);
@@ -769,6 +758,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
 
                             }
                         }
+
                     }
                 }
             }
@@ -892,49 +882,49 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     }
 
     public void friendsmaponline (final Firebasecall fire){
-        String Id=userR.getUid();
-
-        data.child(Id).addValueEventListener(new ValueEventListener() {
+        dataAA = FirebaseDatabase.getInstance().getReference("Friends").child(IDd);
+        String u=IDd;
+        dataAA.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 listid.clear();
-                for (final DataSnapshot datasnap : dataSnapshot.getChildren()) {
-                    if(datasnap.hasChild("privacy")) {
-                        y = datasnap.getValue(GetAndSethomeFriends.class);
-                        Online = y.getOnline();
-                        Privacy = y.getPrivacy();
-                        if(Online!=null&&Privacy!=null)
+                for ( DataSnapshot datasnap : dataSnapshot.getChildren()) {
+                    GetAndSethomeFriends c= datasnap.getValue(GetAndSethomeFriends.class);
+                    if(c.getOnline()!=null) {
+                        final Boolean Online = c.getOnline();
+                        final Boolean Privacy = c.getPrivacy();
                         if (Online && Privacy) {
-                            final String Id = y.getId();
-                            final String useer=y.getUsername();
-                            final String photto=y.getPhoto();
+                            final String Id = c.getId();
+                            final String useer = c.getUsername();
+                            final String photto = c.getPhoto();
                             datalocation = FirebaseDatabase.getInstance().getReference("Location").child(Id);
                             datalocation.child("l").addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                        List<Object> lis = (List<Object>) dataSnapshot.getValue();
-                                        if (lis.get(0) != null) {
-                                            lati = Double.parseDouble(lis.get(0).toString());
-                                        }
-                                        if (lis.get(1) != null) {
-                                            longe = Double.parseDouble(lis.get(1).toString());
-                                        }
-                                        t.setUsername(useer);
-                                        t.setPhoto(photto);
-                                        t.setLat(lati);
-                                        t.setLon(longe);
-                                        t.setId(Id);
-                                        fire.Callba(t);
+                                    List<Object> lis = (List<Object>) dataSnapshot.getValue();
+                                    if (lis.get(0) != null) {
+                                        lati = Double.parseDouble(lis.get(0).toString());
+                                    }
+                                    if (lis.get(1) != null) {
+                                        longe = Double.parseDouble(lis.get(1).toString());
+                                    }
+                                    t.setUsername(useer);
+                                    t.setPhoto(photto);
+                                    t.setLat(lati);
+                                    t.setLon(longe);
+                                    t.setId(Id);
+                                    fire.Callba(t);
 
                                 }
+
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
                                 }
                             });
 
                         }
-
                     }
+
                 }
 
             }
@@ -952,7 +942,6 @@ public class home extends Fragment implements itemClickListener, RoutingListener
         friendsmaponline(new Firebasecall() {
             @Override
             public void Callba(final Friendsetandget o) {
-
                 listid.add(o.getId());
                 markerlist.get(o.getId());//get marker from list
 
@@ -991,7 +980,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                         try {
                             Locale loc = new Locale("en");
                             Geocoder geocoder = new Geocoder(getContext(),loc);
-                            addresses = geocoder.getFromLocation(lati, longe, 1);
+                            addresses = geocoder.getFromLocation(l.latitude,l.longitude, 1);
                             addres = addresses.get(0).getAddressLine(0);
                         } catch (IOException d) {
                             d.printStackTrace();
