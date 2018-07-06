@@ -77,6 +77,7 @@ import gbstracking.CheckgbsAndNetwork;
 import gbstracking.Userlogin.MainActivity;
 import gbstracking.contact.RecycleviewContact;
 import gbstracking.friends.ActivityFriend;
+import gbstracking.friends.bolleaanuser;
 import gbstracking.mainactivity.home;
 
 
@@ -91,11 +92,13 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
     }
     SwipeRefreshLayout mSwipeRefreshLayout;
     public ValueEventListener mListener;
+    DatabaseReference connectedRef;
     String email;
     View v;
     String id;
     String ID;
     public String key;
+    bolleaanuser online;
     StorageReference s;
     ImageView btnBottomSheet;
     BottomSheetBehavior sheetBehavior;
@@ -372,6 +375,7 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
 //                     mDatabasE.removeEventListener(mListener);
                      mAdapter.notifyDataSetChanged();
 
+                     online();
 
                  }
              }
@@ -381,6 +385,7 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
 
 
      }
+
        public void Deleteuser2(String id){
 
            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Friends").child(id);
@@ -390,8 +395,7 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
                    for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
                        dataSnapshot1.getRef().removeValue();
 
-
-
+                    online();
 
                    }
                }
@@ -402,6 +406,74 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
 
        }
 
+    public void online(){
+
+        DatabaseReference data = FirebaseDatabase.getInstance().getReference("Users");
+        data.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+
+                    connectedRef = FirebaseDatabase.getInstance().getReference("Users").child(IDd);
+                    connectedRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            connectedRef.child("online").onDisconnect().setValue(false);
+                            connectedRef.child("online").setValue(true);
+                            Chaneeuseronline();
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError error) {
+                            System.err.println("Listener was cancelled");
+                        }
+                    });
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+    public void Chaneeuseronline() {
+        IDd = userR.getUid();
+        mDatabas.child(IDd).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                online = dataSnapshot.getValue(bolleaanuser.class);
+                data.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                         String  KEY = dataSnapshot1.getKey();
+                            data.child(KEY).orderByChild("id").equalTo(IDd).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot dataa : dataSnapshot.getChildren()) {
+                                        dataa.getRef().child("online").setValue(online.getOnline());
+                                        dataa.getRef().child("online").onDisconnect().setValue(false);
+
+
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
 
 
 

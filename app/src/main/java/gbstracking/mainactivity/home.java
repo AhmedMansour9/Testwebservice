@@ -593,7 +593,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     for (DataSnapshot dataa : dataSnapshot.getChildren()) {
-                                                dataa.getRef().child("online").setValue(online.getOnline());
+                                                 dataa.getRef().child("online").setValue(online.getOnline());
                                                 dataa.getRef().child("online").onDisconnect().setValue(false);
 
 
@@ -705,12 +705,12 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     }
 
     public void online(){
-        IDd=userR.getUid();
+
         DatabaseReference data = FirebaseDatabase.getInstance().getReference("Users");
         data.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChild(IDd)) {
+                if (dataSnapshot.hasChild(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
 
                     connectedRef = FirebaseDatabase.getInstance().getReference("Users").child(IDd);
                     connectedRef.addValueEventListener(new ValueEventListener() {
