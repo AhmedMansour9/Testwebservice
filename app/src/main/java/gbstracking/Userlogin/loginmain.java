@@ -36,8 +36,6 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.gbstracking.R;
 
-import gbstracking.friends.ActivityFriend;
-import gbstracking.verfeyphone.verfieymobile;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -127,9 +125,8 @@ public class loginmain extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if (firebaseAuth.getCurrentUser() != null) {
-                    startActivity(new Intent(loginmain.this, verfieymobile.class));
-                    finish();
-                }
+                    startActivity(new Intent(loginmain.this, Nvigation.class));
+                    finish(); }
             }
         };
 
@@ -224,13 +221,6 @@ public class loginmain extends AppCompatActivity {
             }
         }
     }
-    //KeyBoard
-    public  void hideSoftKeyboard(Activity activity) {
-        InputMethodManager inputMethodManager =
-                (InputMethodManager) activity.getSystemService(
-                        Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(new View(this).getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-    }
     //Authintication FaceeBook
     public void FaceBooklogin() {
         ImageView btn_fb_login = findViewById(R.id.img_face);
@@ -286,7 +276,7 @@ public class loginmain extends AppCompatActivity {
 
                             UserloginMain a=new UserloginMain(useer,emaail,id,phtotooo);
                             currnetuser.child("Users").child(id).setValue(a);
-                            Intent intent=new Intent(loginmain.this,verfieymobile.class);
+                            Intent intent=new Intent(loginmain.this,Nvigation.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                             finish();
@@ -324,7 +314,7 @@ public class loginmain extends AppCompatActivity {
       shareeditor.apply();
       checke = sharelod.getBoolean("test", false);
       if (checke==true){
-          Intent intent=new Intent(loginmain.this,verfieymobile.class);
+          Intent intent=new Intent(loginmain.this,Nvigation.class);
           intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
           startActivity(intent);
       }
@@ -460,7 +450,7 @@ public class loginmain extends AppCompatActivity {
 
                                                           UserloginMain a=new UserloginMain(username,emaail,id,phtotooo);
                                                           currnetuser.child("Users").child(id).setValue(a);
-                                                          Intent intent=new Intent(loginmain.this,verfieymobile.class);
+                                                          Intent intent=new Intent(loginmain.this,Nvigation.class);
                                                           intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                           startActivity(intent);
                                                           finish();

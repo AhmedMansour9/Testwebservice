@@ -118,18 +118,13 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
     UserID userid;
     DatabaseReference data;
     ProgressDialog progressDialog;
-    ArrayList<Integer> myArrayList=new ArrayList<Integer>();
-    ArrayList<Boolean> myArrayListboolean=new ArrayList<Boolean>();
     CheckgbsAndNetwork checkInfo;
     CoordinatorLayout cor;
-    public static ArrayList<Integer> listPositions;
-    public static ArrayList<Boolean> listBoolean;
     DatabaseReference databaseReference;
     DatabaseReference mDatabaseRef;
     ChildEventListener child;
     public static Boolean check;
     Context context;
-    private RecyclerViewReadyCallback recyclerViewReadyCallback;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -139,7 +134,7 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
         mDatabasE = FirebaseDatabase.getInstance().getReference("Friends");
         mDatabas = FirebaseDatabase.getInstance().getReference("Users");
         context=this.getContext();
-         moviesList = new ArrayList<>();
+        moviesList = new ArrayList<>();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("Friends");
         editemai = v.findViewById(R.id.editfriend);
         checkInfo=new CheckgbsAndNetwork(getApplicationContext());
@@ -152,10 +147,8 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
         IDd = userR.getUid();
         userr = userR.getEmail();
         btnBottomSheet = v.findViewById(R.id.add);
-//        friend = v.findViewById(R.id.findyourfriend);
         progressDialog = new ProgressDialog(getApplicationContext());
         Recyclview();
-//        RecycleviewSerach();
         SwipRefresh();
 
 
@@ -165,9 +158,6 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
 
 
         return v;
-    }
-    public interface RecyclerViewReadyCallback {
-        void onLayoutReady();
     }
 
     private boolean hasId(String idc){
@@ -184,54 +174,54 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
 
     public void SendatatoAdapter() {
 
-       if(checkInfo.isNetworkAvailable(getApplicationContext())) {
-           moviesList.clear();
-           mAdapter.notifyDataSetChanged();
-           mSwipeRefreshLayout.setRefreshing(true);
+        if(checkInfo.isNetworkAvailable(getApplicationContext())) {
+            moviesList.clear();
+            mAdapter.notifyDataSetChanged();
+            mSwipeRefreshLayout.setRefreshing(true);
 
-           mDatabasE = FirebaseDatabase.getInstance().getReference("Friends");
+            mDatabasE = FirebaseDatabase.getInstance().getReference("Friends");
             mDatabasE.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-            if(dataSnapshot.hasChild(IDd)){
-                mDatabasE.child(IDd).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        moviesList.clear();
-                        mAdapter.notifyDataSetChanged();
-                        mSwipeRefreshLayout.setRefreshing(true);
-
-                        for(DataSnapshot data:dataSnapshot.getChildren()){
-                            Friendsetandget friendsetandget = data.getValue(Friendsetandget.class);
-
-                            if (friendsetandget != null && !hasId(friendsetandget.getUsername())) {
-                                moviesList.add(0, friendsetandget);
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.hasChild(IDd)){
+                        mDatabasE.child(IDd).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                moviesList.clear();
                                 mAdapter.notifyDataSetChanged();
-                                mSwipeRefreshLayout.setRefreshing(false);
+                                mSwipeRefreshLayout.setRefreshing(true);
 
+                                for(DataSnapshot data:dataSnapshot.getChildren()){
+                                    Friendsetandget friendsetandget = data.getValue(Friendsetandget.class);
+
+                                    if (friendsetandget != null && !hasId(friendsetandget.getUsername())) {
+                                        moviesList.add(0, friendsetandget);
+                                        mAdapter.notifyDataSetChanged();
+                                        mSwipeRefreshLayout.setRefreshing(false);
+
+                                    }
+
+                                }
                             }
 
-                        }
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }else {
+                        mSwipeRefreshLayout.setEnabled(false);
                     }
+                }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-                    }
-                });
-            }else {
-                mSwipeRefreshLayout.setEnabled(false);
-            }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-       }else{
-           snackbarinternet();
-       }
+                }
+            });
+        }else{
+            snackbarinternet();
+        }
     }
     private void recycle_animation(RecyclerView recyclerView)
     {
@@ -248,13 +238,13 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
 
 //        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
 //            if(MoviesAdapter.filteredList.isEmpty()){
-                l = moviesList.get(position);
-                Intent i = new Intent(getApplicationContext(), ActivityFriend.class);
-                i.putExtra("Email2", l.GetEmail());
-                i.putExtra("Photo2", l.getPhoto());
-                i.putExtra("id", l.getId());
-                i.putExtra("username",l.getUsername());
-                startActivity(i);
+        l = moviesList.get(position);
+        Intent i = new Intent(getApplicationContext(), ActivityFriend.class);
+        i.putExtra("Email2", l.GetEmail());
+        i.putExtra("Photo2", l.getPhoto());
+        i.putExtra("id", l.getId());
+        i.putExtra("username",l.getUsername());
+        startActivity(i);
 //            }else if(!MoviesAdapter.filteredList.isEmpty()){
 //                l = MoviesAdapter.filteredList.get(position);
 //                Intent i = new Intent(getApplicationContext(), ActivityFriend.class);
@@ -312,41 +302,41 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
     }
 
     public void AddFriend(){
-      editemai = v.findViewById(R.id.editfriend);
-         EMail = editemai.getText().toString();
+        editemai = v.findViewById(R.id.editfriend);
+        EMail = editemai.getText().toString();
 
         if(EMail.equals(userR.getEmail())){
             Toast.makeText(getApplicationContext(), "Invalid Email", Toast.LENGTH_SHORT).show();
         } else {
             mDatabas.orderByChild("email").equalTo(EMail).addListenerForSingleValueEvent(new ValueEventListener() {
-          @Override
-          public void onDataChange(DataSnapshot dataSnapshot) {
-           if (dataSnapshot.exists()) {
-             for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-           userid = dataSnapshot1.getValue(UserID.class);
-           USerid=userid.getId();
-                      }
-          mDatabasE.child(IDd).orderByChild("email").equalTo(EMail).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-           public void onDataChange(DataSnapshot dataSnapshot) {
-           if(dataSnapshot.exists()){
-           Toast.makeText(getApplicationContext(), getResources().getString(R.string.useralready), Toast.LENGTH_SHORT).show();
-               }
-            else{
-          data.child(USerid).orderByChild("email").equalTo(userR.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
-           @Override
-           public void onDataChange(DataSnapshot dataSnapshot) {
-                   if(dataSnapshot.exists()){
-          Toast.makeText(getApplicationContext(), getResources().getString(R.string.requestsentAlready) , Toast.LENGTH_SHORT).show();
-          }
-                    else if(!dataSnapshot.exists()){
-            data.child(userid.getId()).push().child("email").setValue(userR.getEmail());
-                       editemai.setText("");
-                       Toast.makeText(getApplicationContext(), getResources().getString(R.string.requestsent), Toast.LENGTH_SHORT).show();}}
                 @Override
-                  public void onCancelled(DatabaseError databaseError) {}});}}
-                 @Override
-                 public void onCancelled(DatabaseError databaseError) {
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                            userid = dataSnapshot1.getValue(UserID.class);
+                            USerid=userid.getId();
+                        }
+                        mDatabasE.child(IDd).orderByChild("email").equalTo(EMail).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.exists()){
+                                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.useralready), Toast.LENGTH_SHORT).show();
+                                }
+                                else{
+                                    data.child(USerid).orderByChild("email").equalTo(userR.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            if(dataSnapshot.exists()){
+                                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.requestsentAlready) , Toast.LENGTH_SHORT).show();
+                                            }
+                                            else if(!dataSnapshot.exists()){
+                                                data.child(userid.getId()).push().child("email").setValue(userR.getEmail());
+                                                editemai.setText("");
+                                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.requestsent), Toast.LENGTH_SHORT).show();}}
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {}});}}
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
                             }
                         });
                     } else {
@@ -361,50 +351,52 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
 
         }
 
-     }
-     public void Deleteuser(String email, final int position){
-          databaseReference = FirebaseDatabase.getInstance().getReference("Friends").child(IDd);
-         databaseReference.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
-             @Override
-             public void onDataChange(DataSnapshot dataSnapshot) {
-                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                     Log.d("User key", child.getKey());
-                     key=child.getKey();
-                     moviesList.remove(position);
-                     child.getRef().removeValue();
+    }
+    public void Deleteuser(String email, final int position){
+        databaseReference = FirebaseDatabase.getInstance().getReference("Friends").child(IDd);
+        databaseReference.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    Log.d("User key", child.getKey());
+                    key=child.getKey();
+                    moviesList.remove(position);
+                    child.getRef().removeValue();
 //                     mDatabasE.removeEventListener(mListener);
-                     mAdapter.notifyDataSetChanged();
+                    mAdapter.notifyDataSetChanged();
 
-                     online();
-
-                 }
-             }
-             @Override
-             public void onCancelled(DatabaseError databaseError) {}
-         });
-
-
-     }
-
-       public void Deleteuser2(String id){
-
-           DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Friends").child(id);
-           databaseReference.orderByChild("email").equalTo(userr).addListenerForSingleValueEvent(new ValueEventListener() {
-               @Override
-               public void onDataChange(DataSnapshot dataSnapshot) {
-                   for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                       dataSnapshot1.getRef().removeValue();
-
+//                    home i=new home();
+//                    i.online();
                     online();
 
-                   }
-               }
-               @Override
-               public void onCancelled(DatabaseError databaseError) {
-               }
-           });
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
 
-       }
+
+    }
+
+    public void Deleteuser2(String id){
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Friends").child(id);
+        databaseReference.orderByChild("email").equalTo(userr).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                    dataSnapshot1.getRef().removeValue();
+//                    home i=new home();
+//                    i.online();
+                online();
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+    }
 
     public void online(){
 
@@ -444,7 +436,7 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                         String  KEY = dataSnapshot1.getKey();
+                            String  KEY = dataSnapshot1.getKey();
                             data.child(KEY).orderByChild("id").equalTo(IDd).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -491,7 +483,7 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
         recyclerView.setAdapter(mAdapter);
         recycle_animation(recyclerView);
     }
-//    public void RecycleviewSerach(){
+    //    public void RecycleviewSerach(){
 //        friend.addTextChangedListener(new TextWatcher() {
 //            @Override
 //            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -583,6 +575,4 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
         });
 
     }
-
-
 }

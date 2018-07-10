@@ -56,7 +56,7 @@ public class SpLash_Screen extends Activity {
                     e.printStackTrace();
                 }
                 finally {
-                    Intent intMainActivity=new Intent(SpLash_Screen.this,loginmain.class);
+                    Intent intMainActivity=new Intent(SpLash_Screen.this,Nvigation.class);
                     startActivity(intMainActivity);
                 }
             }

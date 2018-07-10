@@ -7,7 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.graphics.Typeface;
+import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,6 +27,8 @@ import gbstracking.Nvigation;
 import gbstracking.SendNotifications.MyNotification;
 import gbstracking.Userlogin.loginmain;
 import gbstracking.friends.TabsFriends;
+
+import static gbstracking.Nvigation.ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE;
 
 /**
  * Created by HP on 15/05/2018.
@@ -72,7 +77,23 @@ public class windowservice extends Service {
         li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         wm = (WindowManager) getSystemService(WINDOW_SERVICE);
 
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            if (Settings.canDrawOverlays(this)) {
+                windowmanger();
 
+            } else{
+                Intent i= new Intent(getApplicationContext(),loginmain.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+
+            }
+        }else if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.M){
+             windowmanger();
+        }
+
+        return mStartMode;
+    }
+public void windowmanger(){
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 //WindowManager.LayoutParams.TYPE_INPUT_METHOD |
                 WindowManager.LayoutParams.MATCH_PARENT,
@@ -81,15 +102,15 @@ public class windowservice extends Service {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
 
-        params.gravity =  Gravity.CENTER;
+        params.gravity = Gravity.CENTER;
         Typeface typeface = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/no.otf");
 
-         myview = li.inflate(R.layout.my_alert_dialog, null);
-        TextView texttitle=myview.findViewById(R.id.textTitle);
-        TextView textmessage=myview.findViewById(R.id.Message);
-        TextView textstreet=myview.findViewById(R.id.streeet);
-        TextView textdate=myview.findViewById(R.id.tim);
-        TextView textday=myview.findViewById(R.id.Da);
+        myview = li.inflate(R.layout.my_alert_dialog, null);
+        TextView texttitle = myview.findViewById(R.id.textTitle);
+        TextView textmessage = myview.findViewById(R.id.Message);
+        TextView textstreet = myview.findViewById(R.id.streeet);
+        TextView textdate = myview.findViewById(R.id.tim);
+        TextView textday = myview.findViewById(R.id.Da);
         texttitle.setTypeface(typeface);
         textmessage.setTypeface(typeface);
         textstreet.setTypeface(typeface);
@@ -100,56 +121,56 @@ public class windowservice extends Service {
         textdate.setText(date);
         textday.setText(day);
         texttitle.setText(title);
-         myview.setOnTouchListener(new View.OnTouchListener() {
-             double x,y,pressedX,pressedY;
+        myview.setOnTouchListener(new View.OnTouchListener() {
+            double x, y, pressedX, pressedY;
 
-             @Override
-             public boolean onTouch(View view, MotionEvent motionEvent) {
-                 WindowManager.LayoutParams update=params;
-                 switch (motionEvent.getAction()){
-                     case MotionEvent.ACTION_DOWN:
-                         x=update.x;
-                         y=update.y;
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                WindowManager.LayoutParams update = params;
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        x = update.x;
+                        y = update.y;
 
-                         pressedX=motionEvent.getX();
-                         pressedY=motionEvent.getY();
+                        pressedX = motionEvent.getX();
+                        pressedY = motionEvent.getY();
 
-                         break;
-                     case MotionEvent.ACTION_UP:
-                         return true;
-                     case MotionEvent.ACTION_MOVE:
-                         update.x=(int)(x+(motionEvent.getRawX()-pressedX));
-                         update.y=(int)(y+(motionEvent.getRawY()-pressedY));
-                     wm.updateViewLayout(myview,update);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        return true;
+                    case MotionEvent.ACTION_MOVE:
+                        update.x = (int) (x + (motionEvent.getRawX() - pressedX));
+                        update.y = (int) (y + (motionEvent.getRawY() - pressedY));
+                        wm.updateViewLayout(myview, update);
 
-                     default:
-                         break;
+                    default:
+                        break;
 
-                 }
+                }
 
-                 return false;
-             }
-         });
+                return false;
+            }
+        });
 
-        cancel=myview.findViewById(R.id.cancel);
+        cancel = myview.findViewById(R.id.cancel);
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(wm!=null) {
+                if (wm != null) {
                     wm.removeView(myview);
                     stopSelf();
                 }
 
             }
         });
-        moredetail= myview.findViewById(R.id.moredetails);
+        moredetail = myview.findViewById(R.id.moredetails);
         moredetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(wm!=null) {
+                if (wm != null) {
                     wm.removeView(myview);
                     stopSelf();
-                    Intent i= new Intent(getApplicationContext(),loginmain.class);
+                    Intent i = new Intent(getApplicationContext(), loginmain.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
 
@@ -159,9 +180,8 @@ public class windowservice extends Service {
         });
         wm.addView(myview, params);
 
-        return mStartMode;
-    }
 
+    }
 
 
 

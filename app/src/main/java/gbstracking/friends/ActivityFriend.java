@@ -126,6 +126,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import gbstracking.Chat;
 import gbstracking.GetandSetFriendOnlineHome;
 import gbstracking.MyVolley;
 import retrofit2.Call;
@@ -201,7 +202,7 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
     ArrayList<String> myArrayListStrings;
     public static ArrayList<String> emails = new ArrayList<>();;
     public static ArrayList<Boolean> listBoolean = new ArrayList<>();;
-
+    String photo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -252,7 +253,7 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
         SendingMassege();
         Drawline();
         getDistanceCar();
-        CallPhone();
+        Chat();
 
 
         getFriendlocation(new Firebasecallback() {
@@ -602,7 +603,7 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
-        finish();
+
     }
 
     private interface Firebasecallback {
@@ -785,7 +786,7 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
     public void getintentData() {
         Intent i = getIntent();
         email = i.getStringExtra("Email2");
-        String photo = i.getStringExtra("Photo2");
+         photo = i.getStringExtra("Photo2");
         id = i.getStringExtra("id");
         username = i.getStringExtra("username");
         CircleImageView c = findViewById(R.id.ImaGeFriend);
@@ -1222,37 +1223,17 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
         });
     }
 
-    public void CallPhone() {
+    public void Chat() {
 
         if (id != null) {
             phone.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(id);
-                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.hasChild("phone")){
-                                String phonn=dataSnapshot.child("phone").getValue(String.class);
-                                Intent callIntent = new Intent(Intent.ACTION_CALL);
-
-                                callIntent.setData(Uri.parse("tel:"+phonn));
-                                if (ActivityCompat.checkSelfPermission(ActivityFriend.this,
-                                        Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                                    return;
-                                }
-                                startActivity(callIntent);
-                            }else {
-                                Toast.makeText(ActivityFriend.this, "That's Number is Unavailable Now", Toast.LENGTH_SHORT).show();
-                            }
-
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+              Intent inty=new Intent(ActivityFriend.this, Chat.class);
+              inty.putExtra("id",id);
+              inty.putExtra("user",username);
+                    inty.putExtra("photo",photo);
+              startActivity(inty);
 
 
                 }

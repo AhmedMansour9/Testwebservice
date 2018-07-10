@@ -21,7 +21,7 @@
     <string name="twitter_consumer_secret" translatable="false">osQrQuGBD8ya7Fe6MoNWHOtsXJo4UyFP8siOKhX8RTIGBWXkZa
 </string>
 
-    <string name="textfreind"> Enter  Email</string>
+    <string name="textfreind">Enter  Email </string>
     <string name="add">Add Your Friend</string>
     <string name="sendMessage">Send</string>
     <string name="title_shop">Shop</string>
@@ -34,7 +34,7 @@
     <string name="Snackbar">No One Can See Your Location Now!</string>
     <string name="Drawww">Direction</string>
     <string name="Animat">Animation</string>
-    <string name="Call">Call</string>
+    <string name="Call">Chat</string>
     <string name="Phone">Verifying Your Phone Number</string>
     <string name="call">Verfiy</string>
     <string name="FACEBOOK_APP_ID">521429271587864</string>
@@ -78,7 +78,7 @@
     <string name="date">Date :</string>
     <string name="location">Location:</string>
     <string name="sendMessage2">Send Message</string>
-    <string name="availble">On line</string>
+    <string name="availble">Active Now</string>
     <string name="donthave">Dont have account?</string>
     <string name="signup">Sign Up</string>
     <string name="wlcome">WeLcome</string>
@@ -143,4 +143,5 @@
     <string name="shareloc">Canot Access Your Location</string>
     <string name="Sharelocation">Can See Your Location Now</string>
     <string name="LocationShare">Share Your Location</string>
+    <string name="inavailble">Not Available</string>
 </resources>

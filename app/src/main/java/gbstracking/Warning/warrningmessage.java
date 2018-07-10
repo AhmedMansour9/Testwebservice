@@ -109,7 +109,7 @@ public class warrningmessage extends Fragment implements ItemClickListen{
                 if(number.isEmpty()||araaystring.isEmpty()){
 
                 }else {
-                    SharedPreferences.Editor sharet=getApplicationContext().getSharedPreferences("Warr", MODE_PRIVATE).edit();
+                    SharedPreferences.Editor sharet=getApplicationContext().getSharedPreferences("Wa", MODE_PRIVATE).edit();
                     sharet.putBoolean("warnmessa",true);
                     sharet.apply();
 

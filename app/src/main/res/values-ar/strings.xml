@@ -23,7 +23,7 @@
     <string name="twitter_consumer_secret" translatable="false">osQrQuGBD8ya7Fe6MoNWHOtsXJo4UyFP8siOKhX8RTIGBWXkZa
 </string>
 
-    <string name="textfreind">أدخل البريد الالكتروني </string>
+    <string name="textfreind">ادخل البريد الالكتروني  </string>
     <string name="add">اضافة صديق </string>
     <string name="sendMessage">ارسال</string>
     <string name="title_shop">Shop</string>
@@ -33,7 +33,7 @@
 
     <string name="Drawww">الاتجاهات</string>
     <string name="Animat">الرسوم المتحركة</string>
-    <string name="Call">اتصال </string>
+    <string name="Call">محادثة </string>
     <string name="Phone">التحقق من رقم هاتفك</string>
     <string name="call">التحقق</string>
     <string name="FACEBOOK_APP_ID">521429271587864</string>
@@ -97,6 +97,7 @@
     <string name="Add">اضافة الاصدقاء</string>
     <string name="namee">أدخل أسمك</string>
     <string name="invalidemail">البريد الالكتروني خطأ </string>
+
     <string name="enterpas">ادخل الرقم السري </string>
     <string name="verfiymail">تم إرسال رسالة التحقق إلى</string>
     <string name="alreadyuser">البريد الالكتروني موجود مسبقا </string>
@@ -143,4 +144,5 @@
     <string name="shareloc">لا يستطيع ان يري موقعك الجغرافي </string>
     <string name="Sharelocation">يستطيع ان يري موقعك الجغرافي في الوقت الحالي </string>
     <string name="LocationShare">شارك موقعك الجغرافي </string>
+    <string name="inavailble">غير متاح</string>
 </resources>

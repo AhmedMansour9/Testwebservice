@@ -391,7 +391,7 @@
                   android:layout_toRightOf="@+id/sendmassege"
                   android:layout_marginLeft="@dimen/_40sdp"
                   android:layout_marginTop="@dimen/_5sdp"
-                   android:src="@drawable/phonecall"
+                   android:src="@drawable/chat"
                   android:id="@+id/phonecall"
                   />
                 <TextView

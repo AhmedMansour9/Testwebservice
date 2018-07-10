@@ -1,6 +1,8 @@
 package gbstracking;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Build;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -78,16 +80,17 @@ public class Nvigation extends AppCompatActivity
     public static DrawerLayout drawer;
     private Handler mHandler;
     ImageView i;
-    String me="";
+    String me = "";
     FirebaseStorage storage;
     StorageReference storageReference;
     String IDd = "";
     Toolbar toolbar;
     public static ActionBarDrawerToggle toggle;
-    SharedPreferences sharedPreferences;
+    public static int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 5469;
     Boolean warn;
     CheckgbsAndNetwork checkInfo;
     DatabaseReference data;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,32 +98,27 @@ public class Nvigation extends AppCompatActivity
         drawer = findViewById(R.id.drawer_layout);
         AccountKit.initialize(getApplicationContext());
         user = FirebaseAuth.getInstance().getCurrentUser();
-        data=FirebaseDatabase.getInstance().getReference("Friends");
+        data = FirebaseDatabase.getInstance().getReference("Friends");
         mAuth = FirebaseAuth.getInstance();
         mHandler = new Handler();
-         toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
-        IDd=user.getUid();
+        IDd = user.getUid();
         setSupportActionBar(toolbar);
+        checkPermission();
 
-        checkInfo=new CheckgbsAndNetwork(getApplicationContext());
+        checkInfo = new CheckgbsAndNetwork(getApplicationContext());
 
         toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar , R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            home u=new home();
+            home u = new home();
             u.logoutuser();
-        }
-       sharedPreferences=getSharedPreferences("Phone",MODE_PRIVATE);
-        String phone=sharedPreferences.getString("phone","");
-        if(!phone.isEmpty()){
-            DatabaseReference data=FirebaseDatabase.getInstance().getReference().child("Users");
-            data.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("phone").setValue(phone);
         }
 
 
@@ -142,22 +140,20 @@ public class Nvigation extends AppCompatActivity
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
 
 
-
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     View headerView = navigationView.getHeaderView(0);
-                    texName =  headerView.findViewById(R.id.texkName);
+                    texName = headerView.findViewById(R.id.texkName);
                     texName.setText(user.getDisplayName());
 
 
-
-                    if(user.getPhotoUrl()!=null){
-                      View headerVi = navigationView.getHeaderView(0);
-                       i=headerVi.findViewById(R.id.imagecom);
-                      CircleImageView c=headerView.findViewById(R.id.person_image);
+                    if (user.getPhotoUrl() != null) {
+                        View headerVi = navigationView.getHeaderView(0);
+                        i = headerVi.findViewById(R.id.imagecom);
+                        CircleImageView c = headerView.findViewById(R.id.person_image);
                         String photoUrl = firebaseAuth.getCurrentUser().getPhotoUrl().toString();
                         for (UserInfo profile : firebaseAuth.getCurrentUser().getProviderData()) {
                             System.out.println(profile.getProviderId());
@@ -175,7 +171,7 @@ public class Nvigation extends AppCompatActivity
                                         .into(c);
                                 i.setVisibility(View.INVISIBLE);
 
-                            }else {
+                            } else {
                                 Picasso.with(getApplicationContext())
                                         .load(user.getPhotoUrl())
                                         .placeholder(R.drawable.emptyprofile)
@@ -185,23 +181,22 @@ public class Nvigation extends AppCompatActivity
                             }
                         }
 
-                  }else if(user.getPhotoUrl()==null) {
-                      View headerVie = navigationView.getHeaderView(0);
-                      i=headerVie.findViewById(R.id.imagecom);
-                      i.setOnClickListener(new View.OnClickListener() {
-                          @Override
-                          public void onClick(View view) {
-                              Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                                      MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                              startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
-                          }
-                      });
-                  }
+                    } else if (user.getPhotoUrl() == null) {
+                        View headerVie = navigationView.getHeaderView(0);
+                        i = headerVie.findViewById(R.id.imagecom);
+                        i.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
+                            }
+                        });
+                    }
 
                 }
             }
         };
-
     }
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -209,7 +204,15 @@ public class Nvigation extends AppCompatActivity
         // Sync the toggle state after onRestoreInstanceState has occurred.
         toggle.syncState();
     }
-
+    public void checkPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
+            }
+        }
+    }
 
 
     @Override
@@ -293,7 +296,14 @@ public class Nvigation extends AppCompatActivity
                 }
             }
         }
-
+        if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
+            if (!Settings.canDrawOverlays(this)) {
+                // You don't have permission
+                checkPermission();
+            } else {
+                // Do as per your logic
+            }
+        }
 
 
     }
@@ -328,7 +338,7 @@ public class Nvigation extends AppCompatActivity
             case R.id.wrn:
                 mCurrentSelectedPosition=2;
                 toolbar.setVisibility(View.GONE);
-                SharedPreferences share=getSharedPreferences("Warr",MODE_PRIVATE);
+                SharedPreferences share=getSharedPreferences("Wa",MODE_PRIVATE);
                 warn=share.getBoolean("warnmessa",false);
 
                 if(warn){

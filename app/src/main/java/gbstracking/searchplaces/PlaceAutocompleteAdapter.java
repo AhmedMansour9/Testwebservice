@@ -32,7 +32,7 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Adapter that handles Autocomplete requests from the Places Geo Data API.
+ * Messages that handles Autocomplete requests from the Places Geo Data API.
  * {@link AutocompletePrediction} results from the API are frozen and stored directly in this
  * adapter. (See {@link AutocompletePrediction#freeze()}.)
  * <p>
