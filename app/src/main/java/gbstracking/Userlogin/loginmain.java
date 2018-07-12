@@ -112,15 +112,7 @@ public class loginmain extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         checkInfo=new CheckgbsAndNetwork(loginmain.this);
-        setContentView(R.layout.activitylogin);
-
-        loguser = findViewById(R.id.loginname);
-        check = findViewById(R.id.checkbox);
-        logpass = findViewById(R.id.loginpassword);
-        progressBar=findViewById(R.id.progressBarlogin);
-
         mAuth = FirebaseAuth.getInstance();
-        mCallbackManager = CallbackManager.Factory.create();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -129,6 +121,15 @@ public class loginmain extends AppCompatActivity {
                     finish(); }
             }
         };
+
+        setContentView(R.layout.activitylogin);
+
+        loguser = findViewById(R.id.loginname);
+        check = findViewById(R.id.checkbox);
+        logpass = findViewById(R.id.loginpassword);
+        progressBar=findViewById(R.id.progressBarlogin);
+
+        mCallbackManager = CallbackManager.Factory.create();
 
         CheckedBox();
         GoogleSignOpition();
@@ -338,7 +339,6 @@ public class loginmain extends AppCompatActivity {
               dialog = new Dialog(loginmain.this);
               dialog.setContentView(R.layout.customlayout);
               Button dialogButton = (Button) dialog.findViewById(R.id.btnreset);
-              // if button is clicked, close the custom dialog
               dialogButton.setOnClickListener(new View.OnClickListener() {
                   @Override
                   public void onClick(View v) {
@@ -348,7 +348,6 @@ public class loginmain extends AppCompatActivity {
 
                       String EMAIL = edit.getText().toString().trim();
                       if (edit.getText().toString().isEmpty()) {
-//                              Toast.makeText(getBaseContext(), "Check Null Values", Toast.LENGTH_SHORT).show();
                       } else if (EMAIL.isEmpty() || !isValidEmail(EMAIL)) {
                           edit.setError(getResources().getString(R.string.invalidemail));
                       } else {
@@ -410,12 +409,9 @@ public class loginmain extends AppCompatActivity {
                           public void onComplete(@NonNull Task<AuthResult> task) {
                               progressBar.setVisibility(View.GONE);
                               if (!task.isSuccessful()) {
-                                  // there was an error
                               } else {
                                   mAuth = FirebaseAuth.getInstance();
                                   user = mAuth.getCurrentUser();
-                                  boolean emailVerified = user.isEmailVerified();
-//                                  if (emailVerified) {
                                       if (check.isChecked()) {
                                           loginPrefsEditor.putBoolean("saveLogin", true);
                                           loginPrefsEditor.putString("username", firstName);
@@ -445,10 +441,10 @@ public class loginmain extends AppCompatActivity {
                                                           final String emaail=user.getEmail();
                                                           final String id=user.getUid();
                                                           Uri photo=user.getPhotoUrl();
-                                                          username=user.getDisplayName();
+
                                                           final String phtotooo=String.valueOf(photo);
 
-                                                          UserloginMain a=new UserloginMain(username,emaail,id,phtotooo);
+                                                          UserloginMain a=new UserloginMain(user.getDisplayName(),emaail,id,phtotooo);
                                                           currnetuser.child("Users").child(id).setValue(a);
                                                           Intent intent=new Intent(loginmain.this,Nvigation.class);
                                                           intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -460,9 +456,6 @@ public class loginmain extends AppCompatActivity {
 
 
 
-//                                  }else {
-//                                      Toast.makeText(getApplicationContext(),"Verified Your Account",Toast.LENGTH_LONG).show();
-//                                  }
                               }
                           }
                       });

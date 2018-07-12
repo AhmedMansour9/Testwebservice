@@ -71,7 +71,6 @@ public class warnimgernecy extends Fragment {
     CheckgbsAndNetwork checkInfo;
     FrameLayout frame;
     public warnimgernecy() {
-        // Required empty public constructor
     }
 
 

@@ -27,7 +27,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.accountkit.AccountKit;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -40,8 +39,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.gbstracking.R;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -59,6 +61,7 @@ import gbstracking.Warning.warnimgernecy;
 import gbstracking.Warning.welcomewarning;
 import gbstracking.contact.invitefriends;
 import gbstracking.friends.TabsFriends;
+import gbstracking.friends.bolleaanuser;
 import gbstracking.mainactivity.home;
 import gbstracking.searchplaces.Searchplaces;
 import gbstracking.transportiation.nearesttransportion;
@@ -90,15 +93,21 @@ public class Nvigation extends AppCompatActivity
     Boolean warn;
     CheckgbsAndNetwork checkInfo;
     DatabaseReference data;
-
+    DatabaseReference connectedRef;
+    DatabaseReference mDatabas;
+    DatabaseReference dates;
+    ValueEventListener vlue;
+    bolleaanuser online;
+    public Boolean dekete=true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nvigation);
         drawer = findViewById(R.id.drawer_layout);
-        AccountKit.initialize(getApplicationContext());
         user = FirebaseAuth.getInstance().getCurrentUser();
+        mDatabas = FirebaseDatabase.getInstance().getReference("Users");
         data = FirebaseDatabase.getInstance().getReference("Friends");
+        dates = FirebaseDatabase.getInstance().getReference("Friends");
         mAuth = FirebaseAuth.getInstance();
         mHandler = new Handler();
         toolbar = findViewById(R.id.toolbar);
@@ -197,6 +206,8 @@ public class Nvigation extends AppCompatActivity
                 }
             }
         };
+
+
     }
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -233,7 +244,6 @@ public class Nvigation extends AppCompatActivity
             filePath = data.getData();
             if(filePath != null)
             {
-                Toast.makeText(this, ""+filePath, Toast.LENGTH_SHORT).show();
                 if (checkInfo.isNetworkAvailable(getApplicationContext())) {
                     final ProgressDialog progressDialog = new ProgressDialog(Nvigation.this);
                     progressDialog.setTitle("Uploading...");
@@ -278,7 +288,6 @@ public class Nvigation extends AppCompatActivity
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     progressDialog.dismiss();
-                                    Toast.makeText(getApplicationContext(), "Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }}).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -297,12 +306,12 @@ public class Nvigation extends AppCompatActivity
             }
         }
         if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
-            if (!Settings.canDrawOverlays(this)) {
-                // You don't have permission
-                checkPermission();
-            } else {
-                // Do as per your logic
-            }
+//            if (!Settings.canDrawOverlays(this)) {
+//                // You don't have permission
+//                checkPermission();
+//            } else {
+//                // Do as per your logic
+//            }
         }
 
 
@@ -375,7 +384,9 @@ public class Nvigation extends AppCompatActivity
                     FirebaseAuth.getInstance().signOut();
                     startActivity(new Intent(Nvigation.this,loginmain.class));
                     finish();
-                    AccountKit.logOut();
+
+
+
 
                 }else {
                     snackbarinternet();
@@ -408,13 +419,15 @@ public class Nvigation extends AppCompatActivity
         mAuth.addAuthStateListener(mAuthListener);
 
     }
-      public void snackbarinternet(){
+
+    public void snackbarinternet(){
           Snackbar.make(drawer,getResources().getString(R.string.Nointernet),1500).show();
 
       }
     @Override
     public void onStop() {
         super.onStop();
+
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
@@ -423,7 +436,16 @@ public class Nvigation extends AppCompatActivity
     @Override
     public void onDestroy() {
         super.onDestroy();
+//        if(FirebaseAuth.getInstance().getCurrentUser()!=null) {
+//            online();
+//        }
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+
+
         finish();
+
     }
 
 }

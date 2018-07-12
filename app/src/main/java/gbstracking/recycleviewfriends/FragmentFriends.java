@@ -71,8 +71,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import gbstracking.CheckgbsAndNetwork;
 import gbstracking.Userlogin.MainActivity;
 import gbstracking.contact.RecycleviewContact;
@@ -91,14 +89,11 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
         // Required empty public constructor
     }
     SwipeRefreshLayout mSwipeRefreshLayout;
-    public ValueEventListener mListener;
-    DatabaseReference connectedRef;
     String email;
     View v;
     String id;
     String ID;
     public String key;
-    bolleaanuser online;
     StorageReference s;
     ImageView btnBottomSheet;
     BottomSheetBehavior sheetBehavior;
@@ -122,7 +117,6 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
     CoordinatorLayout cor;
     DatabaseReference databaseReference;
     DatabaseReference mDatabaseRef;
-    ChildEventListener child;
     public static Boolean check;
     Context context;
 
@@ -225,8 +219,8 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
     }
     private void recycle_animation(RecyclerView recyclerView)
     {
-        final Context context = recyclerView.getContext();
-        final LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
+         Context context = recyclerView.getContext();
+         LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(context, R.anim.layoutanimation);
 
         recyclerView.setLayoutAnimation(controller);
         recyclerView.getAdapter().notifyDataSetChanged();
@@ -236,8 +230,6 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
     @Override
     public void onClick(View view, int position) {
 
-//        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-//            if(MoviesAdapter.filteredList.isEmpty()){
         l = moviesList.get(position);
         Intent i = new Intent(getApplicationContext(), ActivityFriend.class);
         i.putExtra("Email2", l.GetEmail());
@@ -245,20 +237,7 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
         i.putExtra("id", l.getId());
         i.putExtra("username",l.getUsername());
         startActivity(i);
-//            }else if(!MoviesAdapter.filteredList.isEmpty()){
-//                l = MoviesAdapter.filteredList.get(position);
-//                Intent i = new Intent(getApplicationContext(), ActivityFriend.class);
-//                i.putExtra("Email2", l.GetEmail());
-//                i.putExtra("Photo2", l.getPhoto());
-//                i.putExtra("id", l.getId());
-//                i.putExtra("username",l.getUsername());
-//                startActivity(i);
-//
-//            }
-//        }else{
-//            CheckgbsAndNetwork chec=new CheckgbsAndNetwork(getActivity());
-//            chec.showSettingsAlert();
-//        }
+
 
     }
     @Override
@@ -362,12 +341,9 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
                     key=child.getKey();
                     moviesList.remove(position);
                     child.getRef().removeValue();
-//                     mDatabasE.removeEventListener(mListener);
                     mAdapter.notifyDataSetChanged();
 
-//                    home i=new home();
-//                    i.online();
-                    online();
+
 
                 }
             }
@@ -386,9 +362,9 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
                     dataSnapshot1.getRef().removeValue();
-//                    home i=new home();
-//                    i.online();
-                online();
+
+
+
                 }
             }
             @Override
@@ -396,75 +372,6 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
             }
         });
 
-    }
-
-    public void online(){
-
-        DatabaseReference data = FirebaseDatabase.getInstance().getReference("Users");
-        data.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChild(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-
-                    connectedRef = FirebaseDatabase.getInstance().getReference("Users").child(IDd);
-                    connectedRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-                            connectedRef.child("online").onDisconnect().setValue(false);
-                            connectedRef.child("online").setValue(true);
-                            Chaneeuseronline();
-                        }
-                        @Override
-                        public void onCancelled(DatabaseError error) {
-                            System.err.println("Listener was cancelled");
-                        }
-                    });
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-    }
-    public void Chaneeuseronline() {
-        IDd = userR.getUid();
-        mDatabas.child(IDd).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                online = dataSnapshot.getValue(bolleaanuser.class);
-                data.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                            String  KEY = dataSnapshot1.getKey();
-                            data.child(KEY).orderByChild("id").equalTo(IDd).addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot dataa : dataSnapshot.getChildren()) {
-                                        dataa.getRef().child("online").setValue(online.getOnline());
-                                        dataa.getRef().child("online").onDisconnect().setValue(false);
-
-
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                }
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
     }
 
 
@@ -483,20 +390,7 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
         recyclerView.setAdapter(mAdapter);
         recycle_animation(recyclerView);
     }
-    //    public void RecycleviewSerach(){
-//        friend.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//            }
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//                mAdapter.getFilter().filter(charSequence);
-//            }
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//            }
-//        });
-//    }
+
     public void SwipRefresh(){
         mSwipeRefreshLayout =  v.findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -558,9 +452,6 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
 
-            @OnClick
-            public void toggleBottomSheet() {
-            }
         });
 
         btnBottomSheet.setOnClickListener(new View.OnClickListener() {
@@ -575,4 +466,5 @@ public class FragmentFriends extends Fragment implements ItemClickListener,btncl
         });
 
     }
+
 }

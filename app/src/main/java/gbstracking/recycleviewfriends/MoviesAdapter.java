@@ -86,36 +86,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
                 .inflate(R.layout.itsmrecyclefriends, parent, false);
         return new MyViewHolder(itemView);
     }
-//    @Override
-//    public Filter getFilter() {
-//        return new Filter() {
-//            @Override
-//            protected FilterResults performFiltering(CharSequence charSequence) {
-//                String charString = charSequence.toString();
-//                if (charString.isEmpty()) {
-//                    filteredList = mArrayList;
-//                } else {
-//                    ArrayList<Friendsetandget> filteredListtt = new ArrayList<>();
-//                    for (Friendsetandget androidVersion : mArrayList) {
-//                        if (androidVersion.getUsername().toLowerCase().contains(charString) ) {
-//                            filteredListtt.add(androidVersion);
-//                        }
-//                    }
-//                    filteredList = filteredListtt;
-//                }
-//                FilterResults filterResults = new FilterResults();
-//                filterResults.values = filteredList;
-//                return filterResults;
-//            }
-//            @Override
-//            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-//                filteredList = (ArrayList<Friendsetandget>) filterResults.values;
-//                notifyDataSetChanged();
-//            }
-//        };
-//    }
-
-
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {

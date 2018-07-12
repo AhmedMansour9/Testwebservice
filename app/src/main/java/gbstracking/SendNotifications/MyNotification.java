@@ -18,8 +18,10 @@ import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 
 import com.gbstracking.R;
@@ -37,7 +39,8 @@ public class MyNotification {
         this.mCtx = mCtx;
     }
 
-    public void showSmallNotification(String title, String message,String address,String time,String day, Intent intent) {
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    public void showSmallNotification(String title, String message, String address, String time, String day, Intent intent) {
 
 
         PendingIntent resultPendingIntent =
@@ -88,6 +91,7 @@ public class MyNotification {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void showSmallNotificati(String title, String message, Intent intent) {
         PendingIntent resultPendingIntent =
                 PendingIntent.getActivity(

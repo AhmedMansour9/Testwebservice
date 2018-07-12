@@ -17,10 +17,6 @@
     <string name="fb_login_protocol_scheme">fb521429271587864</string>
 
 
-    <string name="twitter_consumer_key" translatable="false">ueJEB6bmw7bxNlgIbqWwIV6mB</string>
-    <string name="twitter_consumer_secret" translatable="false">osQrQuGBD8ya7Fe6MoNWHOtsXJo4UyFP8siOKhX8RTIGBWXkZa
-</string>
-
     <string name="textfreind">Enter  Email </string>
     <string name="add">Add Your Friend</string>
     <string name="sendMessage">Send</string>
@@ -31,7 +27,6 @@
     <string name="Direction">Directions</string>
     <string name="Startdirection">Start Movie</string>
     <string name="textshare">Turn off Location Sharing</string>
-    <string name="Snackbar">No One Can See Your Location Now!</string>
     <string name="Drawww">Direction</string>
     <string name="Animat">Animation</string>
     <string name="Call">Chat</string>

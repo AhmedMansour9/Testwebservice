@@ -3,7 +3,9 @@ package gbstracking.contact;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
@@ -30,22 +32,20 @@ public class social extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v=inflater.inflate(R.layout.sociaal, container, false);
-        share=v.findViewById(R.id.invite);
+        share=v.findViewById(R.id.invitet);
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//               Intent intent = new Intent(Intent.ACTION_SEND);
-//                intent.setType("text/plain");
-//                intent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=zamaleekonlinee.zamalekonline");
-//                if (null != intent.resolveActivity(getActivity().getPackageManager())) {
-//                    startActivity(Intent.createChooser(intent, "Share"));
-//                }
+                if (Build.VERSION.SDK_INT >= 24) {
+                    StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+                    StrictMode.setVmPolicy(builder.build());
+                }
 
                 Intent sendIntent = new Intent();
 
                 sendIntent.setAction(Intent.ACTION_SEND);
 
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=zamaleekonlinee.zamalekonline");
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.gbstracking");
 
                 sendIntent.setType("text/plain");
 
@@ -57,7 +57,6 @@ public class social extends Fragment {
         });
 
 
-        // Inflate the layout for this fragment
         return v;
     }
 

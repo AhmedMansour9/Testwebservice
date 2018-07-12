@@ -18,10 +18,10 @@
     <string name="action_settings">Settings</string>
     <string name="hintEmail">البريد الالكتروني </string>
 
+    <string name="facebook_app_id">521429271587864</string>
+    <string name="fb_login_protocol_scheme">fb521429271587864</string>
 
-    <string name="twitter_consumer_key" translatable="false">ueJEB6bmw7bxNlgIbqWwIV6mB</string>
-    <string name="twitter_consumer_secret" translatable="false">osQrQuGBD8ya7Fe6MoNWHOtsXJo4UyFP8siOKhX8RTIGBWXkZa
-</string>
+    <string name="textshare">مشاركة موقعك الجغرافي </string>
 
     <string name="textfreind">ادخل البريد الالكتروني  </string>
     <string name="add">اضافة صديق </string>
@@ -127,7 +127,7 @@
     <string name="poilce">قسم الامن </string>
     <string name="cofe">كافيه </string>
     <string name="Search">أبحث</string>
-    <string name="nofriends">لا يوحد اصدقاء لديك </string>
+
     <string name="friendsloc">موقع الاصدقاء</string>
     <string name="reduis">نصف القطر </string>
     <string name="gbsmessage">للحصول علي افضل النتائج , يجب عليك تفعيل الموقع الجغرافي للجهاز</string>

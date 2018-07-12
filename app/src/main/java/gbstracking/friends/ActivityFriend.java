@@ -462,9 +462,8 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         locationReques = new LocationRequest();
-//        locationReques.setSmallestDisplacement(100);
-        locationReques.setInterval(30 * 1000);
-        locationReques.setFastestInterval(30 * 1000);
+        locationReques.setSmallestDisplacement(10);
+        locationReques.setFastestInterval(10000);
 
         locationReques.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -481,16 +480,11 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
             @Override
             public void onFailure(@NonNull Exception e) {
                 if (e instanceof ResolvableApiException) {
-                    // Location settings are not satisfied, but this can be fixed
-                    // by showing the user a dialog.
                     try {
-                        // Show the dialog by calling startResolutionForResult(),
-                        // and check the result in onActivityResult().
                         ResolvableApiException resolvable = (ResolvableApiException) e;
                         resolvable.startResolutionForResult(ActivityFriend.this,
                                 REQUEST_LOCATION_CODE);
                     } catch (IntentSender.SendIntentException sendEx) {
-                        // Ignore the error.
                     }
                 }
             }
@@ -737,7 +731,6 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
         Scrollfrie.setVisibility(View.INVISIBLE);
         android.support.v7.app.AlertDialog.Builder alertDialog = new android.support.v7.app.AlertDialog.Builder(ActivityFriend.this);
         alertDialog.setMessage(username+" "+getResources().getString(R.string.turnof)+"\n"+getResources().getString(R.string.askhim));
-        // On pressing Settings button
         alertDialog.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, int which) {
                dialog.cancel();
@@ -945,9 +938,7 @@ public class ActivityFriend extends FragmentActivity implements RoutingListener,
             }
         }
         polylines = new ArrayList<>();
-        //add route(s) to the map.
         for (int i = 0; i < route.size(); i++) {
-            //In case of more than 5 alternative routes
             int colorIndex = i % COLORS.length;
             PolylineOptions polyOptions = new PolylineOptions();
             polyOptions.color(Color.GRAY);

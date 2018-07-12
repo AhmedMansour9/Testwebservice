@@ -100,7 +100,6 @@ import android.widget.Toast;
 
 import com.gbstracking.R;
 import com.google.firebase.database.ValueEventListener;
-import com.google.maps.android.ui.IconGenerator;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -114,8 +113,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import gbstracking.Friendsservice;
 import gbstracking.GetAndSethomeFriends;
 import gbstracking.GetandSetFriendOnlineHome;
 import gbstracking.Nvigation;
@@ -142,7 +140,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     FirebaseUser userR;
     String IDd;
     FirebaseAuth mAuth;
-    bolleaanuser online;
+
     HashMap<String, Marker> markerlist = new HashMap<>();
 
     GoogleMap googleMap;
@@ -189,7 +187,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     CoordinatorLayout framehome;
     SharedPreferences sharedPreferences;
     DatabaseReference dataAA;
-   public static ValueEventListener listner;
+
     public home() {
     }
 
@@ -235,7 +233,6 @@ public class home extends Fragment implements itemClickListener, RoutingListener
         Recyclview();
         checkLocationPermission();
         online();
-
         Nvigation.toggle = new ActionBarDrawerToggle(
                 getActivity(), Nvigation.drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
@@ -256,7 +253,7 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                 }
             }
         });
-
+        getApplicationContext().startService(new Intent(getApplicationContext(), Friendsservice.class));
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.maps);
         if (mapFragment != null) {
@@ -268,7 +265,6 @@ public class home extends Fragment implements itemClickListener, RoutingListener
 
 
         sendTokenToServer();
-
 
         return v;
     }
@@ -305,8 +301,8 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         locationReques = new LocationRequest();
-        locationReques.setSmallestDisplacement(1);
-        locationReques.setInterval(1000);
+        locationReques.setSmallestDisplacement(10);
+        locationReques.setInterval(10000);
         locationReques.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         }
@@ -509,11 +505,6 @@ public class home extends Fragment implements itemClickListener, RoutingListener
     @Override
     public void onResume() {
         super.onResume();
-//        if (ContextCompat.checkSelfPermission(getApplicationContext(),
-//                Manifest.permission.ACCESS_FINE_LOCATION)
-//                == PackageManager.PERMISSION_GRANTED) {
-//           buildGoogleapiclint();
-//            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationReques, this);        }
     }
 
     private synchronized void buildGoogleapiclint() {
@@ -543,13 +534,9 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
 
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
                 new android.app.AlertDialog.Builder(getActivity())
                         .setTitle(R.string.info)
                         .setMessage(R.string.gbsmessage)
@@ -567,7 +554,6 @@ public class home extends Fragment implements itemClickListener, RoutingListener
 
 
             } else {
-                // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
@@ -578,46 +564,6 @@ public class home extends Fragment implements itemClickListener, RoutingListener
         }
     }
 
-    public void Chaneeuseronline() {
-        IDd = userR.getUid();
-        datausers.child(IDd).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                online = dataSnapshot.getValue(bolleaanuser.class);
-                data.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                            KEY = dataSnapshot1.getKey();
-                            data.child(KEY).orderByChild("id").equalTo(IDd).addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot dataa : dataSnapshot.getChildren()) {
-                                                 dataa.getRef().child("online").setValue(online.getOnline());
-                                                dataa.getRef().child("online").onDisconnect().setValue(false);
-
-
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                }
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-    }
 
     private void sendTokenToServer() {
         final String token = SharedPrefManager.getInstance(getActivity()).getDeviceToken();
@@ -673,8 +619,15 @@ public class home extends Fragment implements itemClickListener, RoutingListener
             mGoogleApiClient.disconnect();
         }
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+//            online();
 
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -684,8 +637,6 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    // permission was granted, yay! Do the
-                    // location-related task you need to do.
                     if (ContextCompat.checkSelfPermission(getApplicationContext(),
                             Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
@@ -694,18 +645,13 @@ public class home extends Fragment implements itemClickListener, RoutingListener
 
                 } else {
 
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-
                 }
                 return;
             }
 
         }
     }
-
     public void online(){
-
         DatabaseReference data = FirebaseDatabase.getInstance().getReference("Users");
         data.addValueEventListener(new ValueEventListener() {
             @Override
@@ -718,7 +664,9 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                         public void onDataChange(DataSnapshot snapshot) {
                             connectedRef.child("online").onDisconnect().setValue(false);
                             connectedRef.child("online").setValue(true);
-                            Chaneeuseronline();
+
+
+
                         }
                         @Override
                         public void onCancelled(DatabaseError error) {
@@ -951,14 +899,11 @@ public class home extends Fragment implements itemClickListener, RoutingListener
                 }
 
                 LatLng l = new LatLng(o.getLat(), o.getLon());
-                IconGenerator generator = new IconGenerator(context);
-                generator.setBackground(getApplicationContext().getDrawable(R.drawable.mark));
-                Bitmap icon = generator.makeIcon();
 
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(l)
                         .title(o.getUsername())
-                        .icon(BitmapDescriptorFactory.fromBitmap(icon));
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.mark));
 
 
                 InfoWindowData info = new InfoWindowData();

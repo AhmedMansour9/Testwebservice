@@ -27,14 +27,12 @@ public class contacts extends Fragment {
    RecyclerView rec;
 
     public contacts() {
-        // Required empty public constructor
     }
 
 View v;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
        v=inflater.inflate(R.layout.contacts, container, false);
        rec=v.findViewById(R.id.recycler_contacts);
         LinearLayoutManager linearLayoutManage=new LinearLayoutManager(getContext());

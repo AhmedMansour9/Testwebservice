@@ -84,13 +84,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import gbstracking.CheckgbsAndNetwork;
 import gbstracking.Nvigation;
 
-import static com.facebook.accountkit.internal.AccountKitController.getApplicationContext;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 /**
@@ -108,17 +105,10 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
         double lati,longe;
         private static final int[] COLORS = new int[]{R.color.colorPrimaryDark, R.color.colorPrimary, R.color.cardview_light_background, R.color.colorAccent, R.color.primary_dark_material_light};
         int MY_PERMISSIONS_REQUEST_LOCATION=99;
-        @BindView(R.id.doctor)ImageView btndoc;
-        @BindView(R.id.subway)ImageView train;
-        @BindView(R.id.hospital)ImageView hospital;
-        @BindView(R.id.pharmcy)ImageView pharmcy;
-        @BindView(R.id.police)ImageView police;
-        @BindView(R.id.cofe)ImageView cofe;
-        @BindView(R.id.sheetplaces)LinearLayout sheet;
-        @BindView(R.id.details)TextView details;
-        @BindView(R.id.imgsminner)ImageView spinnerimg;
         List<Polyline> polylines;
+        ImageView btndoc,hospital,train,pharmcy,police,cofe,spinnerimg;
         BottomSheetBehavior sheetBehavior;
+        LinearLayout sheet;
         RadioGroup radioGroup;
         List<String> categories;
         List<String> listreduis;
@@ -135,6 +125,7 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
         int reduis;
         String id;
         double LAT,LON;
+        TextView details;
         CheckgbsAndNetwork checkInfo;
         CoordinatorLayout layoutnearest;
         public nearesttransportion() {
@@ -145,14 +136,22 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v=inflater.inflate(R.layout.nearesttransportion, container, false);
-        ButterKnife.bind(this,v);
+        btndoc=v.findViewById(R.id.doctor);
+        spinnerimg=v.findViewById(R.id.imgsminner);
+        train=v.findViewById(R.id.subway);
+        details=v.findViewById(R.id.details);
+        hospital=v.findViewById(R.id.hospital);
+        pharmcy=v.findViewById(R.id.pharmcy);
+        police=v.findViewById(R.id.police);
+        sheet=v.findViewById(R.id.sheetplaces);
+        cofe=v.findViewById(R.id.cofe);
         context=this.getContext();
         layoutnearest=v.findViewById(R.id.layoutnearest);
        categories = new ArrayList<String>();
         polylines=new ArrayList<>();
          spinner = v.findViewById(R.id.spinner);
         spinnerreduis= v.findViewById(R.id.spinnerreduis);
-        checkInfo=new CheckgbsAndNetwork(FacebookSdk.getApplicationContext());
+        checkInfo=new CheckgbsAndNetwork(getApplicationContext());
          listreduis=new ArrayList<>();
         checkLocationPermission();
         sheetBehavior = BottomSheetBehavior.from(sheet);
@@ -575,9 +574,7 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
                 public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 }
 
-                @OnClick
-                public void toggleBottomSheet() {
-                }
+
             });
 
 
@@ -614,16 +611,13 @@ public class nearesttransportion extends Fragment  implements AdapterView.OnItem
 
                         // permission was granted, yay! Do the
                         // location-related task you need to do.
-                        if (ContextCompat.checkSelfPermission(FacebookSdk.getApplicationContext(),
+                        if (ContextCompat.checkSelfPermission(getApplicationContext(),
                                 Manifest.permission.ACCESS_FINE_LOCATION)
                                 == PackageManager.PERMISSION_GRANTED) {
                             buildGoogleapiclint();
                             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationReques, this);                    }
 
                     } else {
-
-                        // permission denied, boo! Disable the
-                        // functionality that depends on this permission.
 
                     }
                     return;

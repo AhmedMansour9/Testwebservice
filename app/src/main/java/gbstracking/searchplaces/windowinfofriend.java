@@ -28,8 +28,6 @@ public class windowinfofriend implements GoogleMap.InfoWindowAdapter {
 
     @Override
     public View getInfoWindow(Marker marker) {
-//        ContextThemeWrapper cw = new ContextThemeWrapper(
-//                getApplicationContext(), R.style.Transparent);
 
         View viewe= LayoutInflater.from(context).inflate(R.layout.custoumwindowfriends,null);
 

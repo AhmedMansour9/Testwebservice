@@ -72,7 +72,6 @@ import com.google.android.gms.tasks.Task;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.OnClick;
 import gbstracking.Nvigation;
 import gbstracking.friends.Common;
 import gbstracking.friends.IGoogleApi;
@@ -497,9 +496,7 @@ public class Searchplaces extends Fragment implements itemClickListener,RoutingL
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
 
-            @OnClick
-            public void toggleBottomSheet() {
-            }
+
         });
 
     }

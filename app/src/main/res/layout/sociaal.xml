@@ -24,7 +24,7 @@
         android:layout_marginTop="@dimen/_15sdp"
         android:background="@drawable/bceditsecretnumber"
         android:layout_marginRight="@dimen/_20sdp"
-        android:id="@+id/invite"
+        android:id="@+id/invitet"
         />
 
     <ImageView
